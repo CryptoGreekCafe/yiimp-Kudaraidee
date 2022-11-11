@@ -67,7 +67,12 @@ clean:
 	rm -f sha3/*.o
 	rm -f sha3/*.a
 	rm -f algos/ar2/*.o
-
+	rm -f algos/blake2/*.o
+	rm -f algos/blake2-ref/*.o
+	rm -f algos/honeycomb/*.o
+	rm -f algos/SWIFFTX/*.o
+	rm -f algos/yespower/*.o
+	
 install: clean all
 	strip -s stratum
 	cp stratum /usr/local/bin/

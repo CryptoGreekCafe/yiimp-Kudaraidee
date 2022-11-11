@@ -1,13 +1,19 @@
-[![Build Status](https://travis-ci.org/Kudaraidee/yiimp.svg?branch=next)](https://travis-ci.org/Kudaraidee/yiimp)
+<h1 align="center"> Yiimp - Yaamp Fork </h1>
 
-#yiimp - yaamp fork
+<h3 align="left"> Requirements </h3>
 
-Required:
+* Linux
+* Mysql
+* Php 7.3
+* Memcached
+* Nginx (Recommended)
+    - You can also use lighttpd or apache
 
-	linux, mysql, php, memcached, a webserver (lighttpd or nginx recommended)
+<h2 align="left"> Configuration</h2>
+<h3 align="center">Nginx </h3>
 
+Use this Config on nginx:
 
-Config for nginx:
 
 	location / {
 		try_files $uri @rewrite;
@@ -24,15 +30,18 @@ Config for nginx:
 	}
 
 
-If you use apache, it should be something like that (already set in web/.htaccess):
+<h3 align="center"> Apache </h3>
+
+It should be something like that (already set in web/.htaccess):
 
 	RewriteEngine on
 
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^(.*) index.php?r=$1 [QSA]
 
+<h3 align="center"> Lighttpd </h3>
 
-If you use lighttpd, use the following config:
+use the following config:
 
 	$HTTP["host"] =~ "yiimp.ccminer.org" {
 	        server.document-root = "/var/yaamp/web"
@@ -46,6 +55,7 @@ If you use lighttpd, use the following config:
 		url.access-deny = ( "~", ".dat", ".log" )
 	}
 
+<h2 align="left"> Setup Instructions </h2>
 
 For the database, import the initial dump present in the sql/ folder
 
@@ -109,7 +119,11 @@ and in the lighttpd config file:
 
 And finally remove the IP filter check in SiteController.php
 
+Using MySQLTuner:
 
+sudo apt-get install mysqltuner
+wait at least 24h
+in cli: mysqltuner
 
 There are logs generated in the /var/stratum folder and /var/log/stratum/debug.log for the php log.
 
@@ -127,7 +141,16 @@ Thanks to globalzon to have released the initial Yaamp source code.
 
 --
 
-You can support this project donating to tpruvot :
+You can support this project donating 
 
-BTC : 1Auhps1mHZQpoX4mCcVL8odU81VakZQ6dR
+tpruvot :
+	BTC : 1Auhps1mHZQpoX4mCcVL8odU81VakZQ6dR
+
+xiaolin1579 :
+	BTC : 1Hfa7BBHejzGj4CNRpV2Lh4xYGizX8c1A5
+	BTC [BEP20] : 0xf6e4e1ce8b3801a612cfff40f29116fbf595b13e
+	DOGE : D6oP3WPygJ4NR26XxfFydUsCiNS4oX9rqb
+	USDT [BEP20] : 0xf6e4e1ce8b3801a612cfff40f29116fbf595b13e
+	USDT [TRC20] : TF6vSbcFFGtwSRgvH1JqkQuVb9J4cszpGc
+	RXD : 1N8WZpwSPaFvbaSMzDrPbLqbfM8tLVE87e
 

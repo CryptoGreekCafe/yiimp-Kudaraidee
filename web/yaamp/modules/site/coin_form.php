@@ -49,8 +49,20 @@ echo CUFHtml::closeCtrlHolder();
 
 echo CUFHtml::openActiveCtrlHolder($coin, 'algo');
 echo CUFHtml::activeLabelEx($coin, 'algo');
-echo CUFHtml::activeTextField($coin, 'algo', array('maxlength'=>64,'style'=>'width: 120px;'));
-echo '<p class="formHint2">Mining algorithm</p>';
+$ListAlgos = array();
+$db_algos = getdbolist('db_algos');
+foreach ($db_algos as $algo) {
+	$NameAlgo = $algo->name;
+	$ListAlgos[$NameAlgo] = $NameAlgo;
+	
+}
+echo CUFHtml::dropDownList('db_coins[algo]', $coin->algo, $ListAlgos, array(
+	'style' => 'border: 1px solid #dfdfdf; height: 26px; width:135px',
+	'class' => 'textInput tweetnews-input'
+));
+$coin_algo = ($coin->algo)? '<span style="color: green;">'.$coin->algo.'</span>' : '<span style="color: red;">None</span>';
+echo '<label style="padding-left: 20px;" for="algo">Algo Selected: '.$coin_algo.'</label>';
+echo '<p class="formHint2">Required all lower case</p>';
 echo CUFHtml::closeCtrlHolder();
 
 echo CUFHtml::openActiveCtrlHolder($coin, 'image');
@@ -353,6 +365,15 @@ echo CUFHtml::activeTextField($coin, 'rpcencoding', array('maxlength'=>5,'style'
 echo '<p class="formHint2">POW/POS</p>';
 echo CUFHtml::closeCtrlHolder();
 
+echo CUFHtml::openActiveCtrlHolder($coin, 'dedicatedport');
+echo CUFHtml::activeLabelEx($coin, 'dedicatedport');
+echo CUFHtml::activeTextField($coin, 'dedicatedport', array(
+    'maxlength' => 5,
+    'style' => 'width: 60px;'
+));
+echo '<p class="formHint2">Run addport to get Port Number</p>';
+echo CUFHtml::closeCtrlHolder();
+
 echo CUFHtml::openActiveCtrlHolder($coin, 'rpccurl');
 echo CUFHtml::activeLabelEx($coin, 'rpccurl');
 echo CUFHtml::activeCheckBox($coin, 'rpccurl');
@@ -382,6 +403,7 @@ if ($coin->id) {
 	echo "<b>Sample config</b>:";
 	echo CHtml::opentag("pre");
 	$port = getAlgoPort($coin->algo);
+	$dedport = $coin->dedicatedport;
 	echo "rpcuser={$coin->rpcuser}\n";
 	echo "rpcpassword={$coin->rpcpasswd}\n";
 	echo "rpcport={$coin->rpcport}\n";
@@ -393,15 +415,29 @@ if ($coin->id) {
 	echo "gen=0\n";
 	echo "\n";
 	echo "alertnotify=echo %s | mail -s \"{$coin->name} alert!\" ".YAAMP_ADMIN_EMAIL."\n";
-	echo "blocknotify=blocknotify ".YAAMP_STRATUM_URL.":$port {$coin->id} %s\n";
-	echo CHtml::closetag("pre");
+	if (empty($coin->dedicatedport))
+        {
+            echo "blocknotify=/var/stratum/blocknotify ".YAAMP_STRATUM_URL.":$port {$coin->id} %s\n";
+        }
+        else
+        {
+            echo "blocknotify=/var/stratum/blocknotify ".YAAMP_STRATUM_URL.":$dedport {$coin->id} %s\n";
+        }
+    echo " \n";
+    echo CHtml::closetag("pre");
 
 	echo CHtml::tag("hr");
 	echo "<b>Miner command line</b>:";
 	echo CHtml::opentag("pre");
 	echo "-a {$coin->algo} ";
-	echo "-o stratum+tcp://".YAAMP_STRATUM_URL.':'.$port.' ';
-	echo "-u {$coin->master_wallet} ";
+	if (empty($coin->dedicatedport))
+        {
+            echo "-o stratum+tcp://" . YAAMP_STRATUM_URL . ':' . $port . ' ';
+        }
+        else
+        {
+            echo "-o stratum+tcp://" . YAAMP_STRATUM_URL . ':' . $dedport . ' ';
+        }echo "-u {$coin->master_wallet} ";
 	echo "-p c={$coin->symbol} ";
 	echo "\n";
 	echo CHtml::closetag("pre");
@@ -441,6 +477,24 @@ echo CUFHtml::closeCtrlHolder();
 echo CUFHtml::openActiveCtrlHolder($coin, 'link_explorer');
 echo CUFHtml::activeLabelEx($coin, 'link_explorer');
 echo CUFHtml::activeTextField($coin, 'link_explorer');
+echo "<p class='formHint2'></p>";
+echo CUFHtml::closeCtrlHolder();
+
+echo CUFHtml::openActiveCtrlHolder($coin, 'link_twitter');
+echo CUFHtml::activeLabelEx($coin, 'link_twitter');
+echo CUFHtml::activeTextField($coin, 'link_twitter');
+echo "<p class='formHint2'></p>";
+echo CUFHtml::closeCtrlHolder();
+
+echo CUFHtml::openActiveCtrlHolder($coin, 'link_discord');
+echo CUFHtml::activeLabelEx($coin, 'link_discord');
+echo CUFHtml::activeTextField($coin, 'link_discord');
+echo "<p class='formHint2'></p>";
+echo CUFHtml::closeCtrlHolder();
+
+echo CUFHtml::openActiveCtrlHolder($coin, 'link_facebook');
+echo CUFHtml::activeLabelEx($coin, 'link_facebook');
+echo CUFHtml::activeTextField($coin, 'link_facebook');
 echo "<p class='formHint2'></p>";
 echo CUFHtml::closeCtrlHolder();
 

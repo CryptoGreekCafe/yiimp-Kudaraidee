@@ -1,6 +1,7 @@
 <?php
 require_once('poloniex_trading.php');
 require_once('binance_trading.php');
+require_once('exbitron_trading.php');
 require_once('bittrex_trading.php');
 require_once('bleutrade_trading.php');
 require_once('bter_trading.php');
@@ -79,6 +80,11 @@ function runExchange($exchangeName=false)
 				getCexIoBalances();
 				break;
 
+			case 'exbitron':
+				doExbitronTrading(true);
+				updateExbitronMarkets();
+				break;
+				
 			case 'empoex':
 				//doEmpoexTrading(true);
 				//updateEmpoexMarkets();

@@ -30,33 +30,8 @@ static void job_mining_notify_buffer(YAAMP_JOB *job, char *buffer)
 			templ->txmerkles, templ->version, templ->nbits, templ->ntime);
 		return;
 	}
-	
-    // yespowerRES job
 
-    if (!strcmp(g_stratum_algo, "yespowerRES")) {
-        char rev_version[32] = {0};
-        char prevHashReversed[65] = {0};
-        char merkleRootReversed[65] = {0};
-        char rev_ntime[32] = {0};
-        char rev_nbits[32] = {0};
-
-
-        //string_be(templ->version,rev_version);
-        //string_be(templ->prevhash_hex,prevHashReversed);
-        //string_be(templ->mr_hex,merkleRootReversed);
-
-        //memset(merkleRootReversed, 0x30, 64); merkleRootReversed[65] = 0;
-
-        string_be(templ->ntime,rev_ntime);
-        string_be(templ->nbits,rev_nbits);
-        // jobId, version, prevHashReversed, merkleRootReversed, hashReserved (finalsaplingroothash), curtime, nbits
-        sprintf(buffer, "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"%x\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",true]}\n",
-		job->id,  templ->prevhash_hex, templ->coinb1, templ->coinb2, templ->mr_hex, templ->txmerkles, templ->version, rev_nbits, rev_ntime, templ->extradata_be);
-        return;
-    }
-	
 	// standard stratum
-	// https://en.bitcoin.it/wiki/Stratum_mining_protocol#mining.notify
 	sprintf(buffer, "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"%x\",\"%s\",\"%s\",\"%s\",[%s],\"%s\",\"%s\",\"%s\",true]}\n",
 		job->id, templ->prevhash_be, templ->coinb1, templ->coinb2, templ->txmerkles, templ->version, templ->nbits, templ->ntime);
 }

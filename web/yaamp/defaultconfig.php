@@ -44,6 +44,7 @@ if (!defined('EXCH_KUCOIN_KEY')) define('EXCH_KUCOIN_KEY', '');
 if (!defined('EXCH_LIVECOIN_KEY')) define('EXCH_LIVECOIN_KEY', '');
 if (!defined('EXCH_NOVA_KEY')) define('EXCH_NOVA_KEY', '');
 if (!defined('EXCH_STOCKSEXCHANGE_KEY')) define('EXCH_STOCKSEXCHANGE_KEY', '');
+if (!defined('EXCH_TXBIT_KEY')) define('EXCH_TXBIT_KEY', '');
 
 if (!defined('YAAMP_BTCADDRESS')) define('YAAMP_BTCADDRESS', '');
 if (!defined('YAAMP_SITE_URL')) define('YAAMP_SITE_URL', 'localhost');

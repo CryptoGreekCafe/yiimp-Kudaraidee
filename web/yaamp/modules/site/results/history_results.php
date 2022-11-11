@@ -2,6 +2,12 @@
 
 $mining = getdbosql('db_mining');
 $algo = user()->getState('yaamp-algo');
+$algo_unit = 'Mh';
+$algo_factor = yaamp_algo_mBTC_factor($algo);
+if ($algo_factor == 0.001) $algo_unit = 'Kh';
+if ($algo_factor == 1000) $algo_unit = 'Gh';
+if ($algo_factor == 1000000) $algo_unit = 'Th';
+if ($algo_factor == 1000000000) $algo_unit = 'Ph';
 if($algo == 'all') return;
 
 echo "<div class='main-left-box'>";
@@ -191,7 +197,7 @@ echo '</tr>';
 
 echo '<tr class="ssrow" style="border-top: 2px solid #eee;">';
 echo '<td width="18px"></td>';
-echo '<td colspan="2"><b>mBTC/Mh/d</b></td>';
+echo '<td colspan="2"><b>mBTC/'.$algo_unit.'/d</b></td>';
 
 echo '<td align="right" style="font-size: .9em;">'.$btcmhday1.'</td>';
 echo '<td align="right" style="font-size: .9em;">'.$btcmhday2.'</td>';

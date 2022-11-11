@@ -45,6 +45,8 @@ $algo_unit = 'Mh';
 $algo_factor = yaamp_algo_mBTC_factor($algo);
 if ($algo_factor == 0.001) $algo_unit = 'Kh';
 if ($algo_factor == 1000) $algo_unit = 'Gh';
+if ($algo_factor == 1000000) $algo_unit = 'Th';
+if ($algo_factor == 1000000000) $algo_unit = 'Ph';
 
 echo <<<end
 </td><td valign=top>
@@ -199,7 +201,7 @@ function pool_hashrate_graph_init(data)
 	var t = $.parseJSON(data);
 	var plot1 = $.jqplot('pool_hashrate_results', t,
 	{
-		title: '<b>Pool Hashrate (Mh/s)</b>',
+		title: '<b>Pool Hashrate ($algo_unit/s)</b>',
 		axes: {
 			xaxis: {
 				tickInterval: 7200,

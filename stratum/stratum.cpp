@@ -114,13 +114,14 @@ static void neoscrypt_hash(const char* input, char* output, uint32_t len)
 
 YAAMP_ALGO g_algos[] =
 {
+	{"0x10", hash0x10, 1, 0, 0},
 	{"a5a", a5a_hash, 0x10000, 0, 0},
 	{"aergo", aergo_hash, 1, 0, 0},
 	{"allium", allium_hash, 0x100, 0, 0},
-	{"argon2", argon2a_hash, 0x10000, 0, sha256_hash_hex },
+	{"anime", anime_hash, 1, 0, 0},
 	{"argon2d250", argon2d_crds_hash, 0x10000, 0, 0 }, // Credits Argon2d Implementation
 	{"argon2d500", argon2d_dyn_hash, 0x10000, 0, 0 }, // Dynamic Argon2d Implementation
-	{"argon2d4096", argon2d_uis_hash, 0x10000, 0, 0 }, // Argon2d Implementation
+	{"argon2d16000", argon2d16000_hash, 0x10000, 0, 0 }, // Argon2d16000 Implementation
 	{"astralhash", astralhash_hash, 0x100, 0, 0},
 	{"bastion", bastion_hash, 1, 0 },
 	{"bcd", bcd_hash, 1, 0, 0},
@@ -131,14 +132,18 @@ YAAMP_ALGO g_algos[] =
 	{"bmw", bmw_hash, 1, 0, 0},
 	{"bmw512", bmw512_hash, 0x100, 0, 0},
 	{"c11", c11_hash, 1, 0, 0},
+	{"cosa", cosa_hash, 1, 0, 0}, //Cosanta (COSA)
+	{"cpupower", cpupower_hash, 0x10000, 0, 0}, //CPUchain
+	{"curvehash", curve_hash, 1, 0, 0},
 	{"decred", decred_hash, 1, 0 },
-	{"curvehash", curve_hash, 0x10000, 0 },
 	{"dedal", dedal_hash, 0x100, 0, 0},
 	{"deep", deep_hash, 1, 0, 0},
 	{"dmd-gr", groestl_hash, 0x100, 0, 0}, /* diamond (double groestl) */
 	{"fresh", fresh_hash, 0x100, 0, 0},
 	{"geek", geek_hash, 1, 0, 0},
+	{"gr", gr_hash, 0x10000, 0, 0},
 	{"groestl", groestl_hash, 0x100, 0, sha256_hash_hex }, /* groestlcoin */
+	{"heavyhash", heavyhash_hash, 1, 0, 0}, /* OBTC */
 	{"hex", hex_hash, 0x100, 0, sha256_hash_hex },
 	{"hive", hive_hash, 0x10000, 0, 0},
 	{"hmq1725", hmq17_hash, 0x10000, 0, 0},
@@ -152,15 +157,17 @@ YAAMP_ALGO g_algos[] =
 	{"lbry", lbry_hash, 0x100, 0, 0},
 	{"luffa", luffa_hash, 1, 0, 0},
 	{"lyra2", lyra2re_hash, 0x80, 0, 0},
-	{"lyra2TDC", lyra2TDC_hash, 0x100, 0, 0},
 	{"lyra2v2", lyra2v2_hash, 0x100, 0, 0},
 	{"lyra2v3", lyra2v3_hash, 0x100, 0, 0},
 	{"lyra2vc0ban", lyra2vc0ban_hash, 0x100, 0, 0},
 	{"lyra2z", lyra2z_hash, 0x100, 0, 0},
+	{"lyra2z330", lyra2z330_hash, 0x100, 0, 0},
 	{"m7m", m7m_hash, 0x10000, 0, 0},
 	{"megabtx", megabtx_hash, 0x100, 0, 0}, /* Bitcore New Algo*/
 	{"megamec", megamec_hash, 0x100, 0, 0}, /* Megacoin New Algo*/
+	{"mike", mike_hash, 0x10000, 0, 0},
 	{"minotaur", minotaur_hash, 1, 0, 0},
+	{"minotaurx", minotaurx_hash, 1, 0, 0},
 	{"myr-gr", groestlmyriad_hash, 1, 0, 0}, /* groestl + sha 64 */
 	{"neoscrypt", neoscrypt_hash, 0x10000, 0, 0},
 	{"nist5", nist5_hash, 1, 0, 0},
@@ -168,16 +175,23 @@ YAAMP_ALGO g_algos[] =
 	{"penta", penta_hash, 1, 0, 0},
 	{"phi", phi_hash, 1, 0, 0},
 	{"phi2", phi2_hash, 0x100, 0, 0},
+	{"phi5", phi5_hash, 1, 0, 0},
 	{"pipe", pipe_hash, 1,0,0},
 	{"polytimos", polytimos_hash, 1, 0, 0},
+	{"power2b", power2b_hash, 0x10000, 0, 0 },
 	{"quark", quark_hash, 1, 0, 0},
 	{"qubit", qubit_hash, 1, 0, 0},
 	{"rainforest", rainforest_hash, 0x100, 0, 0},
 	{"renesis", renesis_hash, 1, 0, 0},
 	{"scrypt", scrypt_hash, 0x10000, 0, 0},
 	{"scryptn", scryptn_hash, 0x10000, 0, 0},
-	{"sha256", sha256_double_hash, 1, 0, 0},
+	{"sha256", sha256_hash, 1, 0, 0},
+	{"sha256d", sha256_double_hash, 1, 0, 0},
+	{"sha256dt", sha256dt_hash, 1, 0, 0},
+	{"sha256csm", sha256csm_hash, 1, 0, 0},
 	{"sha256t", sha256t_hash, 1, 0, 0}, // sha256 3x
+	{"sha3d", sha3d_hash, 1, 0, sha3d_hash_hex},
+	{"sha512256d", sha512_256_double_hash, 1, 0, 0},
 	{"sib", sib_hash, 1, 0, 0},
 	{"skein", skein_hash, 1, 0, 0},
 	{"skein2", skein2_hash, 1, 0, 0},
@@ -192,7 +206,7 @@ YAAMP_ALGO g_algos[] =
 	{"x11", x11_hash, 1, 0, 0},
 	{"x11evo", x11evo_hash, 1, 0, 0},
 	{"x11k", x11k_hash, 1, 0, 0},
-	{"x11kvs", x11kvs_hash, 0x100, 0, 0, 7},
+	{"x11kvs", x11kvs_hash, 0x100, 0, 0,7},
 	{"x12", x12_hash, 1, 0, 0},
 	{"x13", x13_hash, 1, 0, 0},
 	{"x14", x14_hash, 1, 0, 0},
@@ -206,6 +220,7 @@ YAAMP_ALGO g_algos[] =
 	{"x18", x18_hash, 1, 0, 0},
 	{"x20r", x20r_hash, 0x100, 0, 0},
 	{"x21s", x21s_hash, 0x100, 0, 0},
+	{"x22", x22_hash, 1, 0, 0},
 	{"x22i", x22i_hash, 1, 0, 0},
 	{"x25x", x25x_hash, 1, 0, 0},
 	{"xevan", xevan_hash, 0x100, 0, 0},
@@ -216,11 +231,15 @@ YAAMP_ALGO g_algos[] =
 	{"yespower", yespower_hash, 0x10000, 0, 0 },
 	{"yespowerIC", yespowerIC_hash, 0x10000, 0, 0 }, //IsotopeC[IC]
 	{"yespowerIOTS", yespowerIOTS_hash, 0x10000, 0, 0 }, //Iots [IOTS]
+	{"yespowerLITB", yespowerLITB_hash, 0x10000, 0, 0 }, //LightBit[LITB]
 	{"yespowerLTNCG", yespowerLTNCG_hash, 0x10000, 0, 0 }, //LightningCash Gold[LTNCG]
 	{"yespowerR16", yespowerR16_hash, 0x10000, 0, 0 },
 	{"yespowerRES", yespowerRES_hash, 0x10000, 0, 0 }, //Resistanse[RES] 
 	{"yespowerSUGAR", yespowerSUGAR_hash, 0x10000, 0, 0 }, //Sugarchain[SUGAR] 
+	{"yespowerTIDE", yespowerTIDE_hash, 0x10000, 0, 0 }, //Tidecoin[TDC] 
 	{"yespowerURX", yespowerURX_hash, 0x10000, 0, 0 }, //UraniumX[URX] 
+	{"yespowerMGPC", yespowerMGPC_hash, 0x10000, 0, 0 }, //Magpiecoin[MGPC] 
+	{"yespowerARWN", yespowerARWN_hash, 0x10000, 0, 0 }, //Arowanacoin[ARWN] 
 	{"whirlcoin", whirlpool_hash, 1, 0, sha256_hash_hex }, /* old sha merkleroot */
 	{"whirlpool", whirlpool_hash, 1, 0 }, /* sha256d merkleroot */
 	{"whirlpoolx", whirlpoolx_hash, 1, 0, 0},
@@ -419,32 +438,33 @@ int main(int argc, char **argv)
 
 void *monitor_thread(void *p)
 {
-	int cacheHeight = 0;
-	
 	while(!g_exiting)
 	{
-		sleep(0.2);
+		sleep(120);
 
-		g_list_coind.Enter();
-		for(CLI li = g_list_coind.first; li; li = li->next)
+		if(g_last_broadcasted + YAAMP_MAXJOBDELAY < time(NULL))
 		{
-			YAAMP_COIND *coind = (YAAMP_COIND *)li->data;
-			json_value *json = rpc_call(&coind->rpc, "getblockcount");
-			if (!json) continue;
-			json_int_t amount = json_get_int(json, "result");
+			g_exiting = true;
+			stratumlogdate("%s dead lock, exiting...\n", g_stratum_algo);
+			exit(1);
+		}
 
-			if (coind->height != amount) 
+		if(g_max_shares && g_shares_counter) 
+		{
+
+			if((g_shares_counter - g_shares_log) > 10000) 
 			{
-				if (coind->height != cacheHeight) 
-				{
-					debuglog("coind->height differs from rpc response, forcing new template (%d vs %d)..\n", coind->height, amount);
-					cacheHeight = coind->height;
-                }
-				coind_create_job(coind, true);
-				job_update();
+				stratumlogdate("%s %luK shares...\n", g_stratum_algo, (g_shares_counter/1000u));
+				g_shares_log = g_shares_counter;
+			}
+
+			if(g_shares_counter > g_max_shares) 
+			{
+				g_exiting = true;
+				stratumlogdate("%s need a restart (%lu shares), exiting...\n", g_stratum_algo, (unsigned long) g_max_shares);
+				exit(1);
 			}
 		}
-		g_list_coind.Leave();
 	}
 }
 

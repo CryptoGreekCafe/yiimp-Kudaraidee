@@ -132,7 +132,7 @@ void x11kvshash(char *output, const char *input, unsigned int level)
 
     
 	x11kvshash(hash1, nextheader1Pointer, level - 1);
-    x11kvshash(hash2, nextheader2Pointer, level - 1);
+    	x11kvshash(hash2, nextheader2Pointer, level - 1);
 
 
 	// Concat hash, hash1 and hash2

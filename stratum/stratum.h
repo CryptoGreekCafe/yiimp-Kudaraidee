@@ -152,6 +152,7 @@ void scrypt_N_R_1_256(const char* input, char* output, uint32_t N, uint32_t R, u
 
 void sha256_hash_hex(const char *input, char *output, unsigned int len);
 void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
+void sha3d_hash_hex(const char *input, char *output, unsigned int len);
 
 #include "algos/a5a.h"
 #include "algos/c11.h"
@@ -190,6 +191,7 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/jha.h"
 #include "algos/skein.h"
 #include "algos/keccak.h"
+#include "algos/sha256csm.h"
 #include "algos/sha256t.h"
 #include "algos/skunk.h"
 #include "algos/timetravel.h"
@@ -220,7 +222,6 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/tribus.h"
 #include "algos/veltor.h"
 #include "algos/velvet.h"
-#include "algos/argon2a.h"
 #include "algos/vitalium.h"
 #include "algos/aergo.h"
 #include "algos/hex.h"
@@ -236,9 +237,21 @@ void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/bmw512.h"
 #include "algos/x25x.h"
 #include "algos/minotaur.h"
-#include "algos/lyra2TDC.h"
 #include "algos/curvehash.h"
 #include "algos/x11k.h"
 #include "algos/megabtx.h"
 #include "algos/megamec.h"
 #include "algos/x11kvs.h"
+#include "algos/x22.h"
+#include "algos/phi5.h"
+#include "algos/lyra2z330.h"
+#include "algos/gr.h"
+#include "algos/heavyhash/heavyhash.h"
+#include "algos/anime.h"
+#include "algos/cosa.h"
+#include "algos/minotaurx.h"
+#include "algos/0x10.h"
+#include "algos/mike.h"
+#include "algos/sha512_256.h"
+#include "algos/sha3d.h"
+#include "algos/sha256dt.h"

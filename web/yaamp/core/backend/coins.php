@@ -196,6 +196,15 @@ function BackendCoinsUpdate()
 				}
 			}				
 			
+			else if($coin->symbol == 'VKAX') 
+			{
+				if(isset($template['masternode'])) 
+				{
+					if (arraySafeVal($template,'masternode_payments_started'))
+					$coin->reward -= arraySafeVal($template['masternode'],'amount',0)/100000000;
+				}
+			}				
+			
 			else if(!empty($coin->charity_address)) 
 			{
 				if(!$coin->charity_amount)

@@ -47,6 +47,7 @@ span.block2.solo { color: white;  background-color: #4BB2C5 !important; }
 <th>Height</th>
 <th>Amount</th>
 <th>Type</th>
+<th>Effort</th>
 <th>Status</th>
 <th>Difficulty</th>
 <th>Share Diff</th>
@@ -101,6 +102,11 @@ foreach($db_blocks as $db_block)
 		echo '<span class="block2 solo" title="Block was found by solo miner">solo</span>';
 	else echo '<span></span>'; 
 	echo "</td>";
+
+	if ($db_block->effort)	
+		echo '<td>'.$db_block->effort.'%</td>';
+	else
+		echo '<td>N/A</td>';
 	
 	echo '<td class="'.strtolower($db_block->category).'">';
 

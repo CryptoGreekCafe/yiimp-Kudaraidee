@@ -560,7 +560,7 @@ $off = bitcoinvaluetoa($off);
 
 $btcaddr = YAAMP_BTCADDRESS; //'14LS7Uda6EZGXLtRrFEZ2kWmarrxobkyu9';
 
-echo '<a href="https://www.okcoin.com/market.do" target="_blank">Bitstamp '.$mining->usdbtc.'</a>, ';
+echo '<a href="https://www.bitstamp.net/markets/btc/usd/" target="_blank">Bitstamp '.$mining->usdbtc.'</a>, ';
 echo '<a href="https://blockchain.info/address/'.$btcaddr.'" target="_blank">wallet '.$btc->balance.'</a>, next payout '.$topay2.'<br/>';
 
 echo "pay $topay, renter $renter, marg $margin, $margin2<br/>";

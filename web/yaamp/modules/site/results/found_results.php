@@ -51,7 +51,26 @@ span.block.new       { color: white; background-color: #ad4ef0; }
 span.block.orphan    { color: white; background-color: #d9534f; }
 span.block.immature  { color: white; background-color: #f0ad4e; }
 span.block.confirmed { color: white; background-color: #5cb85c; }
-span.solo	{ padding: 2px; display: inline-block; text-align: center; min-width: 15px; border-radius: 3px; color: white; background-color: #48D8D8; }
+span.shared 
+{
+    padding: 2px;
+    display: inline-block;
+    text-align: center;
+    min-width: 15px;
+    border-radius: 3px;
+    color: white;
+    background-color: #87d547;
+}
+span.solo	
+{ 
+	padding: 2px; 
+	display: inline-block; 
+	text-align: center; 
+	min-width: 15px; 
+	border-radius: 3px; 
+	color: white; 
+	background-color: #48D8D8; 
+}
 
 b.row a { font-size: 10pt; }
 .ssrow td.row { font-size: .8em; }
@@ -67,6 +86,7 @@ td.right { text-align: right; }
 <th align="right">Difficulty</th>
 <th align="right">Block</th>
 <th align="right">Time</th>
+<th>Effort</th>
 <th align="right">Type</th>
 <th align="right">Status</th>
 </tr>
@@ -114,13 +134,21 @@ foreach($db_blocks as $db_block)
 	echo '<td class="row right" title="found '.$db_block->difficulty_user.'">'.$difficulty.'</td>';
 	echo '<td class="row right">'.$height.'</td>';
 	echo '<td class="row right">'.$d.' ago</td>';
+
+	if ($db_block->effort)	
+		echo '<td>'.$db_block->effort.'%</td>';
+	else
+		echo '<td>N/A</td>';
 	
 	echo '<td class="row right">';
 	if($db_block->solo == '1') 
-		echo '<span class="solo" title="Block was found by solo miner">solo</span>';
-	else echo '<span></span>';
+		echo '<span class="solo" title="Block was found by solo miner">Solo</span>';
+	else if($db_block->solo == '0')
+		echo '<span class="shared" title="Block found was Shared">Shared</span>';
+	else 
+		echo '<span></span>';
 	echo "</td>";
-	
+
 	echo '<td class="row right">';
 	if($db_block->category == 'orphan')
 		echo '<span class="block orphan">Orphan</span>';
@@ -131,7 +159,8 @@ foreach($db_blocks as $db_block)
 			$t = (int) ($coin->mature_blocks - $db_block->confirmations) * $coin->block_time;
 			$eta = "ETA: ".sprintf('%dh %02dmn', ($t/3600), ($t/60)%60);
 		}
-		echo '<span class="block immature" title="'.$eta.'">Immature ('.$db_block->confirmations.'/'.$coin->mature_blocks.')</span>';
+		if($coin->mature_blocks == NULL) echo '<span class="block immature" title="'.$eta.'">Immature ('.$db_block->confirmations.')</span>';
+		else echo '<span class="block immature" title="'.$eta.'">Immature ('.$db_block->confirmations.'/'.$coin->mature_blocks.')</span>';
 	}
 	else if($db_block->category == 'generate')
 		echo '<span class="block confirmed">Confirmed</span>';

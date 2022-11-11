@@ -303,7 +303,7 @@ if ($DCR || $DGB)
 else if ($ETH)
     $account = $coin->master_wallet;
 	
-else if ($coin->symbol == "RNG") $account = '*';
+else if ($coin->symbol == "RNG"||$coin->symbol == "TDC"||$coin->symbol == "OBTC"||$coin->symbol == "ARWN"||$coin->symbol == "VKAX") $account = '*';
 	
 	
 $txs = $remote->listtransactions($account, $maxrows);

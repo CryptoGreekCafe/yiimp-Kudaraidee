@@ -180,7 +180,7 @@ static inline void sha256_transform_volatile(uint32_t *state, uint32_t *block)
         state[i] += S[i];
 }
 
-void sha256hash(const char* input, char* hash, uint32_t len)
+void sha256hash(const char* hash, char* data, uint32_t len)
 {
     uint32_t _ALIGN(64) S[16];
     uint32_t _ALIGN(64) T[64];
@@ -190,7 +190,7 @@ void sha256hash(const char* input, char* hash, uint32_t len)
     for (r = len; r > -9; r -= 64) {
         if (r < 64)
             memset(T, 0, 64);
-        memcpy(T, input + len - r, r > 64 ? 64 : (r < 0 ? 0 : r));
+        memcpy(T, data + len - r, r > 64 ? 64 : (r < 0 ? 0 : r));
         if (r >= 0 && r < 64)
             ((unsigned char *)T)[r] = 0x80;
         for (i = 0; i < 16; i++)
@@ -230,5 +230,6 @@ void curve_hash(const char* input, char* output, uint32_t len)
         sha256hash((unsigned char *) hash, pub, 65);
     }
     secp256k1_context_destroy(ctx);
-	
+
+    memcpy(output, hash, 32);
 }

@@ -13,6 +13,7 @@ function strip_data($data)
 	return $out;
 }
 
+require_once("altmarkets.php");
 require_once("bitstamp.php");
 require_once("bittrex.php");
 require_once("bitz.php");
@@ -20,6 +21,7 @@ require_once("bleutrade.php");
 require_once("cexio.php");
 require_once("crex24.php");
 require_once("deliondex.php");
+require_once("exbitron.php");
 require_once("escodex.php");
 require_once("gateio.php");
 require_once("graviex.php");
@@ -39,9 +41,11 @@ require_once("cryptowatch.php");
 require_once("stocksexchange.php");
 require_once("tradeogre.php");
 require_once("tradesatoshi.php");
+require_once("txbit.php");
 require_once("swiftex.php");
 require_once("unnamed.php");
 require_once("bibox.php");
+require_once("altilly.php");
 
 
 /* Format an exchange coin Url */
@@ -80,6 +84,10 @@ function getMarketUrl($coin, $marketName)
 
 	if($market == 'alcurex')
 		$url = "https://alcurex.com/#{$symbol}-{$base}";
+	else if($market == 'altilly')
+		$url = "https://altilly.com/market/{$symbol}_{$base}";
+	else if($market == 'altmarkets')
+		$url = "https://v2.altmarkets.io/trading/{$lowsymbol}{$lowbase}";
 	else if($market == 'bibox')
 		$url = "https://www.bibox.com/exchange?coinPair={$symbol}_{$base}";
 	else if($market == 'binance')
@@ -106,6 +114,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "http://www.empoex.com/trade/{$symbol}-{$base}";
 	else if($market == 'deliondex')
 		$url = "https://dex.delion.online/market/DELION.{$symbol}_DELION.{$base}";
+	else if($market == 'exbitron')
+		$url = "https://www.exbitron.com/trading/{$lowsymbol}{$lowbase}";
 	else if($market == 'escodex')
 		$url = "https://wallet.escodex.com/market/ESCODEX.{$symbol}_ESCODEX.{$base}";
 	else if($market == 'gateio')
@@ -126,6 +136,8 @@ function getMarketUrl($coin, $marketName)
 		$url = "https://tradeogre.com/exchange/{$base}-{$symbol}";
 	else if($market == 'tradesatoshi')
 		$url = "https://tradesatoshi.com/Exchange?market={$symbol}_{$base}";
+	else if($market == 'txbit')
+		$url = "https://txbit.io/Trade/{$symbol}/{$base}";
 	else if($market == 'yobit')
 		$url = "https://yobit.net/en/trade/{$symbol}/{$base}";
 	else if($market == 'swiftex')

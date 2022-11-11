@@ -24,8 +24,18 @@ if(!$coin->installed)
 
 	echo CUFHtml::openActiveCtrlHolder($coin, 'algo');
 	echo CUFHtml::activeLabelEx($coin, 'algo');
-	echo CUFHtml::activeTextField($coin, 'algo');
-	echo "<p class='formHint2'></p>";
+	$ListAlgos = array();
+	$db_algos = getdbolist('db_algos');
+	foreach ($db_algos as $algo) 
+	{
+		$NameAlgo = $algo->name;
+		$ListAlgos[$NameAlgo] = $NameAlgo;
+	}
+	echo CUFHtml::dropDownList('db_coins[algo]', $coin->algo, $ListAlgos, array(
+		'style' => 'border: none; height: 26px; width:38%',
+		'class' => 'textInput tweetnews-input'
+	));
+	echo '<p class="formHint2">Required all lower case</p>';
 	echo CUFHtml::closeCtrlHolder();
 
 	echo CUFHtml::openActiveCtrlHolder($coin, 'image');
@@ -62,6 +72,24 @@ echo CUFHtml::closeCtrlHolder();
 echo CUFHtml::openActiveCtrlHolder($coin, 'link_explorer');
 echo CUFHtml::activeLabelEx($coin, 'link_explorer');
 echo CUFHtml::activeTextField($coin, 'link_explorer');
+echo "<p class='formHint2'></p>";
+echo CUFHtml::closeCtrlHolder();
+
+echo CUFHtml::openActiveCtrlHolder($coin, 'link_twitter');
+echo CUFHtml::activeLabelEx($coin, 'link_twitter');
+echo CUFHtml::activeTextField($coin, 'link_twitter');
+echo "<p class='formHint2'></p>";
+echo CUFHtml::closeCtrlHolder();
+
+echo CUFHtml::openActiveCtrlHolder($coin, 'link_discord');
+echo CUFHtml::activeLabelEx($coin, 'link_discord');
+echo CUFHtml::activeTextField($coin, 'link_discord');
+echo "<p class='formHint2'></p>";
+echo CUFHtml::closeCtrlHolder();
+
+echo CUFHtml::openActiveCtrlHolder($coin, 'link_facebook');
+echo CUFHtml::activeLabelEx($coin, 'link_facebook');
+echo CUFHtml::activeTextField($coin, 'link_facebook');
 echo "<p class='formHint2'></p>";
 echo CUFHtml::closeCtrlHolder();
 

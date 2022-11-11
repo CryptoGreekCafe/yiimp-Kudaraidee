@@ -443,6 +443,12 @@ class SiteController extends CommonController
 		$this->renderPartialAlgoMemcached('results/history_results');
 	}
 
+	// Home Tab : Coin Information (algo) on the bottom right
+	public function actionCoins_info()
+	{
+		$this->renderPartialAlgoMemcached('results/coins_info');
+	}
+
 	// Pool Tab : Top left panel with estimated profit per coin
 	public function actionMining_results()
 	{

@@ -814,6 +814,14 @@ void sha256_hash_hex(const char *input, char *output, unsigned int len)
 	hexlify(output, (unsigned char *)output1, 32);
 }
 
+void sha3d_hash_hex(const char *input, char *output, unsigned int len)
+{
+	char output1[32];
+
+	sha3d_hash(input, output1, len);
+	hexlify(output, (unsigned char *)output1, 32);
+}
+
 uint64_t share_to_target(double diff)
 {
         int i, shift = 29;
