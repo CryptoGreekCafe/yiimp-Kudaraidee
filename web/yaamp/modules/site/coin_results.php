@@ -303,7 +303,18 @@ if ($DCR || $DGB)
 else if ($ETH)
     $account = $coin->master_wallet;
 	
-else if ($coin->symbol == "RNG"||$coin->symbol == "TDC"||$coin->symbol == "OBTC"||$coin->symbol == "ARWN"||$coin->symbol == "VKAX") $account = '*';
+else if ($coin->symbol == "BTC") $account = '*'; // should work for all coins now
+	
+	
+$txs = $remote->listtransactions($account, $maxrows);
+
+
+// Coins with disabled accounting will not show any tx. $account should be "*"
+
+if (empty($txs)) {
+        $account = '*';
+        $txs = $remote->listtransactions($account, $maxrows);
+}
 	
 	
 $txs = $remote->listtransactions($account, $maxrows);

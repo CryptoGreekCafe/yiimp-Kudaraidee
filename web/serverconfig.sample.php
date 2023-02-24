@@ -45,24 +45,19 @@ define('YAAMP_DEFAULT_ALGO', 'x11');
 define('YAAMP_USE_NGINX', false);
 
 // Exchange public keys (private keys are in a separate config file)
-define('EXCH_POLONIEX_KEY', '');
+define('EXCH_ALCUREX_KEY', '');
+define('EXCH_ALTMARKETS_KEY', '');
+define('EXCH_BINANCE_KEY', '');
 define('EXCH_BITTREX_KEY', '');
 define('EXCH_BLEUTRADE_KEY', '');
 define('EXCH_BTER_KEY', '');
-define('EXCH_YOBIT_KEY', '');
-define('EXCH_CEXIO_ID', '');
-define('EXCH_CEXIO_KEY', '');
-define('EXCH_COINMARKETS_USER', '');
-define('EXCH_COINMARKETS_PIN', '');
-define('EXCH_BINANCE_KEY', '');
-define('EXCH_BITSTAMP_ID','');
-define('EXCH_BITSTAMP_KEY','');
+define('EXCH_EMPOEX_KEY', '');
+define('EXCH_EXBITRON_KEY', '');
 define('EXCH_HITBTC_KEY','');
 define('EXCH_KRAKEN_KEY', '');
-define('EXCH_KUCOIN_KEY', '');
 define('EXCH_LIVECOIN_KEY', '');
-define('EXCH_STOCKSEXCHANGE_KEY', '');
-define('EXCH_TRADEOGRE_KEY','');
+define('EXCH_POLONIEX_KEY', '');
+define('EXCH_YOBIT_KEY', '');
 
 // Automatic withdraw to Yaamp btc wallet if btc balance > 0.3
 define('EXCH_AUTO_WITHDRAW', 0.3);

@@ -59,14 +59,13 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600) . " hours";
 			<th>Your Wallet Address</th>
 			<th>Rig (opt.)</th>
 			<th>Type</th>
-			<th>Config</th>
 		</tr>
 	</thead>
 
 <tbody>
 	<tr>
 		<td>
-			<select id="drop-stratum" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;">
+			<select id="drop-stratum" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;" onchange="generate()">
 
 			<!-- Add your stratum locations here -->
 			<option value="">Main Stratum</option>
@@ -78,7 +77,7 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600) . " hours";
 		</td>
 
 		<td>
-			<select id="drop-coin" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;">
+			<select id="drop-coin" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;" onchange="generate()">
         <?php
         $list = getdbolist('db_coins', "enable and visible and auto_ready order by algo asc");
 
@@ -91,13 +90,13 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600) . " hours";
                 $id = $coin->id;
                 $algo = $coin->algo;
 
-        	$port_count = getdbocount('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $symbol));
+        	$port_count = getdbocount('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $coin->symbol));
 
-        	$port_db = getdbosql('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $symbol));
+        	$port_db = getdbosql('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $coin->symbol));
 
        		if ($port_count >= 1){$port = $port_db->port;}else{$port = '0000';}
        		if($count == 0){ echo "<option disabled=''>$algo";}elseif($algo != $algoheading){echo "<option disabled=''>$algo</option>";}
-        	echo "<option data-port='$port' data-algo='-a $algo' data-symbol='$symbol'>$name ($symbol)</option>";
+        	echo "<option data-port='$port' data-algo='-a $algo' data-symbol='$coin->symbol'>$name ($symbol)</option>";
 
        		$count=$count+1;
         	$algoheading=$algo;
@@ -106,19 +105,16 @@ $payout_freq = (YAAMP_PAYMENTS_FREQ / 3600) . " hours";
 			</select>
 		</td>
 		<td>
-			<input id="text-wallet" type="text" size="30" placeholder="RF9D1R3Vt7CECzvb1SawieUC9cYmAY1qoj" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;">
+			<input id="text-wallet" type="text" size="30" placeholder="RF9D1R3Vt7CECzvb1SawieUC9cYmAY1qoj" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;" onkeyup="generate()">
 		</td>
 		<td>
-			<input id="text-rig-name" type="text" size="10" placeholder="001" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;">
+			<input id="text-rig-name" type="text" size="10" placeholder="001" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;" onkeyup="generate()">
 		</td>
 		<td>
-			<select id="drop-solo" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;">
+			<select id="drop-solo" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;" onchange="generate()">
 			<option value="">Shared</option>
 			<option value=",m=solo">Solo</option>
 			</select>
-		</td>
-		<td>
-			<input id="Generate!" type="button" value="Generate" onclick="generate()" style="border-style:solid; padding: 3px; font-family: monospace; border-radius: 5px;">
 		</td>
 	
 </tbody>
@@ -265,14 +261,17 @@ function getLastUpdated(){
     var stratum = document.getElementById('drop-stratum');
     var coin = document.getElementById('drop-coin');
     var solo = document.getElementById('drop-solo');
+    var wallet = document.getElementById('text-wallet').value;
     var rigName = document.getElementById('text-rig-name').value;
     var result = '';
 
     result += coin.options[coin.selectedIndex].dataset.algo + ' -o stratum+tcp://';
     result += stratum.value + '<?=YAAMP_STRATUM_URL?>:';
     result += coin.options[coin.selectedIndex].dataset.port + ' -u ';
-    result += document.getElementById('text-wallet').value;
+    if (wallet) result += wallet;
+    else result += 'WALLET_ADDRESS';
     if (rigName) result += '.' + rigName;
+    else result += '.WORKER_NAME';
     result += ' -p c=';
     result += coin.options[coin.selectedIndex].dataset.symbol + solo.value;
     return result;

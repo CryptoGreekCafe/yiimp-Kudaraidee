@@ -208,10 +208,13 @@ function versionToAlgo($coin, $version)
 	$algos['ARG'] = array(
 		0=>'sha256', 1=>'scrypt', 2=>'lyra2v2', 3=>'myr-gr', 4=>'argon2d', 5=>'yescrypt',
 	);
-	
 	$algos['BTA'] = array(
 		0=>'sha256', 1=>'scrypt', 2=>'x16r', 3=>'lyra2z', 4=>'x11', 5=>'nist5', 6=>'x16s',
 	);
+	$algos['PLSR'] = array(
+		0=>'curvehash', 1=>'minotaurx',
+	);
+	
 	
 	$symbol = $coin->symbol;
 	if (!empty($coin->symbol2)) $symbol = $coin->symbol2;
@@ -222,6 +225,8 @@ function versionToAlgo($coin, $version)
 		return arraySafeVal($algos[$symbol], ($version - 9), '');
 	else if($symbol == 'XVG')
 		return arraySafeVal($algos[$symbol], ($version >> 11), 'scrypt');
+	else if($symbol == 'PLSR')
+		return arraySafeVal($algos[$symbol], ($version >> 16) & 255, '');
 	else if($symbol == 'XSH')
 		return arraySafeVal($algos[$symbol], (($version-536870000) >> 11), 'scrypt');
 	else if (isset($algos[$symbol]))

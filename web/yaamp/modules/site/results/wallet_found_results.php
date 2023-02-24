@@ -28,8 +28,29 @@ span.block.immature { color: white; background-color: #f0ad4e; }
 span.block.exchange { color: white; background-color: #5cb85c; }
 span.block.cleared  { color: white; background-color: gray; }
 span.block2 { padding: 2px; display: inline-block; text-align: center; min-width: 35px; border-radius: 3px; margin-right: 5px; }
-span.block2.solo { color: white;  background-color: #4BB2C5 !important; }
+span.shared 
+{
+	padding: 2px;
+ 	display: inline-block;
+	text-align: center;
+	min-width: 15px;
+	border-radius: 3px;
+	color: white;
+	background-color: #87d547;
+}
+
+span.solo
+{
+	padding: 2px; 
+	display: inline-block; 
+	text-align: center; 
+	min-width: 15px; 
+	border-radius: 3px; 
+	color: white; 
+	background-color: #48D8D8; 
+}
 </style>
+
 <table class="dataGrid2">
 <thead>
 <tr>
@@ -39,6 +60,7 @@ span.block2.solo { color: white;  background-color: #4BB2C5 !important; }
 <th data-sorter="numeric" >Amount</th>
 <th data-sorter="numeric" >Difficulty</th>
 <th data-sorter="numeric" >Time</th>
+<th data-sorter="numeric">Effort</th>
 <th data-sorter="text" >Type</th>
 <th data-sorter="text" >Status</th>
 </tr>
@@ -77,11 +99,19 @@ foreach($db_blocks as $db_block)
 	echo '<td>'.$db_block->amount.'</td>';
 	echo '<td>'.round_difficulty($db_block->difficulty).'</td>';
 	echo '<td data="'.$db_block->time.'"><b>'.$d.' ago</b></td>';
+
+	if ($db_block->effort)	
+		echo '<td class="row right">'.$db_block->effort.'%</td>';
+	else
+		echo '<td class="row right">N/A</td>';
 	
 	echo '<td>';
 	if($db_block->solo == '1') 
-		echo '<span class="block2 solo" title="Block was found by solo miner">solo</span>';
-	else echo '<span></span>'; 
+		echo '<span class="solo" title="Block was found by solo miner">Solo</span>';
+	else if($db_block->solo == '0')
+		echo '<span class="shared" title="Block found was Shared">Shared</span>';
+	else 
+		echo '<span></span>';
 	echo "</td>";
 	
 	echo '<td class="'.strtolower($db_block->category).'">';

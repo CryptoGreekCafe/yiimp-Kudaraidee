@@ -8,21 +8,19 @@ function updateRawcoins()
 	debuglog(__FUNCTION__);
 	// exit();
 	exchange_set_default('alcurex', 'disabled', true);
-	// exchange_set_default('binance', 'disabled', true);
-	exchange_set_default('bleutrade', 'disabled', true);
-	exchange_set_default('empoex', 'disabled', true);
-	exchange_set_default('coinbene', 'disabled', true);
-	exchange_set_default('coinexchange', 'disabled', true);
-	exchange_set_default('coinsmarkets', 'disabled', true);
-	exchange_set_default('gateio', 'disabled', true);
-	exchange_set_default('jubi', 'disabled', true);
-	// exchange_set_default('nova', 'disabled', true);
-	exchange_set_default('stocksexchange', 'disabled', true);
-	exchange_set_default('tradesatoshi', 'disabled', true);
-	exchange_set_default('cryptopia', 'disabled', true);
-	exchange_set_default('stex', 'disabled', true);
+	exchange_set_default('altmarkets', 'disabled', true);
 	exchange_set_default('binance', 'disabled', true);
-	exchange_set_default('bitrex', 'disabled', true);
+	exchange_set_default('bittrex', 'disabled', true);
+	exchange_set_default('bleutrade', 'disabled', true);
+	exchange_set_default('bter', 'disabled', true);
+	exchange_set_default('empoex', 'disabled', true);
+	exchange_set_default('exbitron', 'disabled', false);
+	exchange_set_default('hitbtc', 'disabled', true);
+	exchange_set_default('kraken', 'disabled', true);
+	exchange_set_default('kucoin', 'disabled', true);
+	exchange_set_default('livecoin', 'disabled', true);
+	exchange_set_default('poloniex', 'disabled', true);
+	exchange_set_default('yobit', 'disabled', false);
 
 	settings_prefetch_all();
 

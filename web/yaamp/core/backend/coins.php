@@ -119,7 +119,7 @@ function BackendCoinsUpdate()
 		{
 			$ret = $remote->getauxblock();
 
-			if(strcasecmp($remote->error, 'method not found') == 0)
+			if(strstr($remote->error, 'method not found') != NULL)
 				$coin->auxpow = false;
 			else
 				$coin->auxpow = true;

@@ -3,6 +3,7 @@
 
 bool client_suggest_difficulty(YAAMP_CLIENT *client, json_value *json_params)
 {
+
 	if(json_params->u.array.length>0)
 	{
 		double diff = client_normalize_difficulty(json_params->u.array.values[0]->u.dbl);

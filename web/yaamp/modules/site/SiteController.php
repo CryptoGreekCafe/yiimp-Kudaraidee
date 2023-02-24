@@ -14,9 +14,16 @@ class SiteController extends CommonController
 		$valid = isAdminIP($client_ip);
 
 		if (arraySafeVal($_SERVER,'HTTP_X_FORWARDED_FOR','') != '') {
-			debuglog("admin access attempt via IP spoofing!");
-			$valid = false;
-		}
+            debuglog("admin access attempt via IP spoofing!");
+            $valid = false;
+            $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            foreach ($iplist as $ip) {
+                if(isAdminIP($ip)){
+                    $valid=true;
+                    break;
+                }
+            }
+        }
 
 		if ($valid)
 			debuglog("admin connect from $client_ip");

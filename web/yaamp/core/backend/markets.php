@@ -87,6 +87,9 @@ function BackendPricesUpdateExchange($exchangename)
 		case 'exbitron':
 			updateExbitronMarkets();
 		break;
+		case 'yobit':
+			updateYobitMarkets();
+		break;
 		case 'occe':
 			updateOCCEMarkets();
 		break;

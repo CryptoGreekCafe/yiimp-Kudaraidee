@@ -106,7 +106,7 @@ function BackendBlockNew($coin, $db_block)
 			$timelast_shared = (int) arraySafeVal($last_shared, 'time');
       
 			$total_shared_difficulty = dboscalar("SELECT SUM(difficulty) FROM shares WHERE coinid=:coinid AND algo=:algo AND solo=0 AND time>=$timelast_shared", array(':algo'=>$coin->algo,':coinid'=>$coin->id));
-			$effort = floatval($total_shared_difficulty * 100 / $db_block->difficulty);
+			$effort = round($total_shared_difficulty * 100 / $db_block->difficulty, 2);
 			$db_block->effort = $effort;
 			
 			$db_block->solo = 0;
@@ -157,7 +157,7 @@ function BackendBlockNew($coin, $db_block)
 		$timelast_solo = (int) arraySafeVal($last_solo, 'time');
       
 		$total_solo_difficulty = dboscalar("SELECT SUM(difficulty) FROM shares WHERE coinid=:coinid AND algo=:algo AND solo=1 AND time>=$timelast_solo", array(':algo'=>$coin->algo,':coinid'=>$coin->id));
-		$effort = floatval($total_solo_difficulty * 100 / $db_block->difficulty);
+		$effort = round($total_solo_difficulty * 100 / $db_block->difficulty, 2);
 		$db_block->effort = $effort;
 		
 		$db_block->solo = 1;

@@ -23,14 +23,22 @@ class CommonController extends CController
 		$this->t1 = microtime(true);
 
 		if(user()->getState('yaamp_admin')) {
-			$this->admin = true;
-			$client_ip = arraySafeVal($_SERVER,'REMOTE_ADDR');
-			if (!isAdminIP($client_ip)) {
-				user()->setState('yaamp_admin', false);
-				debuglog("admin attempt from $client_ip");
-				$this->admin = false;
-			}
-		}
+            $this->admin = true;
+            $client_ip = arraySafeVal($_SERVER,'REMOTE_ADDR');
+            if (!isAdminIP($client_ip)) {
+                user()->setState('yaamp_admin', false);
+                //debuglog("admin attempt from $client_ip");
+                $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $this->admin = false;
+                foreach ($iplist as $ip) {
+                    if(isAdminIP($ip)){
+                        $this->admin=true;
+                        user()->setState('yaamp_admin',true);
+                        break;
+                    }
+                }
+            }
+        }
 
 		$algo = user()->getState('yaamp-algo');
 		if(!$algo) user()->setState('yaamp-algo', YAAMP_DEFAULT_ALGO);
