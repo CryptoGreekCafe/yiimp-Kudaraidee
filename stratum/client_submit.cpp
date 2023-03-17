@@ -1,17 +1,13 @@
 
 #include "stratum.h"
-#include <map>
 
 uint64_t lyra2z_height = 0;
-
-typedef std::map<string, double> MAX_HASH_MAP;
-MAX_HASH_MAP hash_map;
 
 //#define MERKLE_DEBUGLOG
 //#define DONTSUBMIT
 
-void build_submit_values(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB_TEMPLATE* templ,
-	const char* nonce1, const char* nonce2, const char* ntime, const char* nonce)
+void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *templ,
+	const char *nonce1, const char *nonce2, const char *ntime, const char *nonce)
 {
 	sprintf(submitvalues->coinbase, "%s%s%s%s", templ->coinb1, nonce1, nonce2, templ->coinb2);
 	int coinbase_len = strlen(submitvalues->coinbase);
@@ -27,12 +23,12 @@ void build_submit_values(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB_TEMPLATE* tem
 	YAAMP_HASH_FUNCTION merkle_hash = sha256_double_hash_hex;
 	if (g_current_algo->merkle_func)
 		merkle_hash = g_current_algo->merkle_func;
-	merkle_hash((char*)coinbase_bin, doublehash, coinbase_len / 2);
+	merkle_hash((char *)coinbase_bin, doublehash, coinbase_len/2);
 
 	string merkleroot = merkle_with_first(templ->txsteps, doublehash);
 	ser_string_be(merkleroot.c_str(), submitvalues->merkleroot_be, 8);
 
-	if (templ->isbitcash) {
+	if(templ->isbitcash) {
 		sprintf(submitvalues->coinbase, "%s%s%s%s", templ->coinforsubmitb1, nonce1, nonce2, templ->coinforsubmitb2);
 	}
 
@@ -42,21 +38,18 @@ void build_submit_values(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB_TEMPLATE* tem
 	if (!strcmp(g_stratum_algo, "lbry")) {
 		sprintf(submitvalues->header, "%s%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			templ->claim_be, ntime, templ->nbits, nonce);
-		ser_string_be(submitvalues->header, submitvalues->header_be, 112 / 4);
-	}
-	else if (strlen(templ->extradata_be) == 128) { // LUX SC
+		ser_string_be(submitvalues->header, submitvalues->header_be, 112/4);
+	} else if (strlen(templ->extradata_be) == 128) { // LUX SC
 		sprintf(submitvalues->header, "%s%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			ntime, templ->nbits, nonce, templ->extradata_be);
 		ser_string_be(submitvalues->header, submitvalues->header_be, 36); // 80+64 / sizeof(u32)
-	}
-	else if (templ->needpriceinfo)
+	} else if (templ->needpriceinfo)
 	{
 		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			ntime, templ->nbits, nonce);
 		ser_string_be(submitvalues->header, submitvalues->header_be, 20);
 		sprintf(submitvalues->header_be, "%s%s", submitvalues->header_be, templ->priceinfo);
-	}
-	else
+	} else
 	{
 		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
 			ntime, templ->nbits, nonce);
@@ -65,9 +58,9 @@ void build_submit_values(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB_TEMPLATE* tem
 
 	binlify(submitvalues->header_bin, submitvalues->header_be);
 
-	//	printf("%s\n", submitvalues->header_be);
-	int header_len = strlen(submitvalues->header) / 2;
-	g_current_algo->hash_function((char*)submitvalues->header_bin, (char*)submitvalues->hash_bin, header_len);
+//	printf("%s\n", submitvalues->header_be);
+	int header_len = strlen(submitvalues->header)/2;
+	g_current_algo->hash_function((char *)submitvalues->header_bin, (char *)submitvalues->hash_bin, header_len);
 
 	hexlify(submitvalues->hash_hex, submitvalues->hash_bin, 32);
 	string_be(submitvalues->hash_hex, submitvalues->hash_be);
@@ -75,8 +68,8 @@ void build_submit_values(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB_TEMPLATE* tem
 
 /////////////////////////////////////////////
 
-static void create_decred_header(YAAMP_JOB_TEMPLATE* templ, YAAMP_JOB_VALUES* out,
-	const char* ntime, const char* nonce, const char* nonce2, const char* vote, bool usegetwork)
+static void create_decred_header(YAAMP_JOB_TEMPLATE *templ, YAAMP_JOB_VALUES *out,
+	const char *ntime, const char *nonce, const char *nonce2, const char *vote, bool usegetwork)
 {
 	struct __attribute__((__packed__)) {
 		uint32_t version;
@@ -113,12 +106,12 @@ static void create_decred_header(YAAMP_JOB_TEMPLATE* templ, YAAMP_JOB_VALUES* ou
 
 	binlify(header.extra, nonce2);
 
-	hexlify(out->header, (const unsigned char*)&header, 180);
+	hexlify(out->header, (const unsigned char*) &header, 180);
 	memcpy(out->header_bin, &header, sizeof(header));
 }
 
-static void build_submit_values_decred(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB_TEMPLATE* templ,
-	const char* nonce1, const char* nonce2, const char* ntime, const char* nonce, const char* vote, bool usegetwork)
+static void build_submit_values_decred(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *templ,
+	const char *nonce1, const char *nonce2, const char *ntime, const char *nonce, const char *vote, bool usegetwork)
 {
 	if (!usegetwork) {
 		// not used yet
@@ -134,7 +127,7 @@ static void build_submit_values_decred(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB
 		YAAMP_HASH_FUNCTION merkle_hash = sha256_double_hash_hex;
 		if (g_current_algo->merkle_func)
 			merkle_hash = g_current_algo->merkle_func;
-		merkle_hash((char*)coinbase_bin, doublehash, coinbase_len / 2);
+		merkle_hash((char *)coinbase_bin, doublehash, coinbase_len/2);
 
 		string merkleroot = merkle_with_first(templ->txsteps, doublehash);
 		ser_string_be(merkleroot.c_str(), submitvalues->merkleroot_be, 8);
@@ -145,8 +138,8 @@ static void build_submit_values_decred(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB
 	}
 	create_decred_header(templ, submitvalues, ntime, nonce, nonce2, vote, usegetwork);
 
-	int header_len = strlen(submitvalues->header) / 2;
-	g_current_algo->hash_function((char*)submitvalues->header_bin, (char*)submitvalues->hash_bin, header_len);
+	int header_len = strlen(submitvalues->header)/2;
+	g_current_algo->hash_function((char *)submitvalues->header_bin, (char *)submitvalues->hash_bin, header_len);
 
 	hexlify(submitvalues->hash_hex, submitvalues->hash_bin, 32);
 	string_be(submitvalues->hash_hex, submitvalues->hash_be);
@@ -154,14 +147,14 @@ static void build_submit_values_decred(YAAMP_JOB_VALUES* submitvalues, YAAMP_JOB
 
 /////////////////////////////////////////////////////////////////////////////////
 
-static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VALUES* submitvalues,
-	char* extranonce2, char* ntime, char* nonce, char* vote)
+static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VALUES *submitvalues,
+	char *extranonce2, char *ntime, char *nonce, char *vote)
 {
-	YAAMP_COIND* coind = job->coind;
-	YAAMP_JOB_TEMPLATE* templ = job->templ;
+	YAAMP_COIND *coind = job->coind;
+	YAAMP_JOB_TEMPLATE *templ = job->templ;
 
-	if (job->block_found) return;
-	if (job->deleted) return;
+	if(job->block_found) return;
+	if(job->deleted) return;
 
 	uint64_t hash_int = get_hash_difficulty(submitvalues->hash_bin);
 	uint64_t coin_target = decode_compact(templ->nbits);
@@ -170,32 +163,26 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 	int block_size = YAAMP_SMALLBUFSIZE;
 	vector<string>::const_iterator i;
 
-	if (hash_int <= coin_target)
-		debuglog("%s => Initialize block_size = %d\n", coind->symbol, block_size);
-
-	for (i = templ->txdata.begin(); i != templ->txdata.end(); ++i)
+	for(i = templ->txdata.begin(); i != templ->txdata.end(); ++i)
 		block_size += strlen((*i).c_str());
 
-	if (hash_int <= coin_target)
-		debuglog("%s => Initialize block_size after count on txdata = %d\n", coind->symbol, block_size);
-	char* block_hex = (char*)malloc(block_size);
-	if (!block_hex) return;
+	char *block_hex = (char *)malloc(block_size);
+	if(!block_hex) return;
 
 	// do aux first
-	for (int i = 0; i < templ->auxs_size; i++)
+	for(int i=0; i<templ->auxs_size; i++)
 	{
-		if (i == 0) debuglog("%s => Do aux first!!!\n", coind->symbol);
-		if (!templ->auxs[i]) continue;
-		YAAMP_COIND* coind_aux = templ->auxs[i]->coind;
+		if(!templ->auxs[i]) continue;
+		YAAMP_COIND *coind_aux = templ->auxs[i]->coind;
 
-		if (!coind_aux || !strcmp(coind->symbol, coind_aux->symbol2))
+		if(!coind_aux || !strcmp(coind->symbol, coind_aux->symbol2))
 			continue;
 
 		unsigned char target_aux[1024];
 		binlify(target_aux, coind_aux->aux.target);
 
 		uint64_t coin_target_aux = get_hash_difficulty(target_aux);
-		if (hash_int <= coin_target_aux)
+		if(hash_int <= coin_target_aux)
 		{
 			memset(block_hex, 0, block_size);
 
@@ -204,10 +191,10 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 
 			////////////////////////////////////////////////// parent merkle steps
 
-			sprintf(block_hex + strlen(block_hex), "%02x", (unsigned char)templ->txsteps.size());
+			sprintf(block_hex+strlen(block_hex), "%02x", (unsigned char)templ->txsteps.size());
 
 			vector<string>::const_iterator i;
-			for (i = templ->txsteps.begin(); i != templ->txsteps.end(); ++i)
+			for(i = templ->txsteps.begin(); i != templ->txsteps.end(); ++i)
 				sprintf(block_hex + strlen(block_hex), "%s", (*i).c_str());
 
 			strcat(block_hex, "00000000");
@@ -215,19 +202,19 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 			////////////////////////////////////////////////// auxs merkle steps
 
 			vector<string> lresult = coind_aux_merkle_branch(templ->auxs, templ->auxs_size, coind_aux->aux.index);
-			sprintf(block_hex + strlen(block_hex), "%02x", (unsigned char)lresult.size());
+			sprintf(block_hex+strlen(block_hex), "%02x", (unsigned char)lresult.size());
 
-			for (i = lresult.begin(); i != lresult.end(); ++i)
-				sprintf(block_hex + strlen(block_hex), "%s", (*i).c_str());
+			for(i = lresult.begin(); i != lresult.end(); ++i)
+				sprintf(block_hex+strlen(block_hex), "%s", (*i).c_str());
 
-			sprintf(block_hex + strlen(block_hex), "%02x000000", (unsigned char)coind_aux->aux.index);
+			sprintf(block_hex+strlen(block_hex), "%02x000000", (unsigned char)coind_aux->aux.index);
 
 			////////////////////////////////////////////////// parent header
 
 			strcat(block_hex, submitvalues->header_be);
 
 			bool b = coind_submitgetauxblock(coind_aux, coind_aux->aux.hash, block_hex);
-			if (b)
+			if(b)
 			{
 				debuglog("*** ACCEPTED %s %d (+1)\n", coind_aux->name, coind_aux->height);
 
@@ -240,7 +227,7 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 		}
 	}
 
-	if (hash_int <= coin_target)
+	if(hash_int <= coin_target)
 	{
 		char count_hex[8] = { 0 };
 		if (templ->txcount <= 252)
@@ -248,19 +235,15 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 		else
 			sprintf(count_hex, "fd%02x%02x", templ->txcount & 0xFF, templ->txcount >> 8);
 
-		debuglog("%s => tx count in HEX = %s\n", coind->symbol, count_hex);
-
 		memset(block_hex, 0, block_size);
-		debuglog("%s => g_current_algo = %s\n", coind->symbol, g_current_algo->name);
-		if (!strcmp("sha256csm", g_current_algo->name))
+		
+		if (!strcmp("sha256csm", g_current_algo->name)) 
 		{
 			sprintf(block_hex, "%s%s%s%s", submitvalues->header_be, "0000000000000000000000000000000000000000000000000000000000000000", count_hex, submitvalues->coinbase);
-			debuglog("%s => BlockHeader Size = %d\nBlockHeader = %s%s%s%s\n", coind->symbol, strlen(block_hex), submitvalues->header_be, "0000000000000000000000000000000000000000000000000000000000000000", count_hex, submitvalues->coinbase);
-		}
-		else
+		} 
+		else 
 		{
 			sprintf(block_hex, "%s%s%s", submitvalues->header_be, count_hex, submitvalues->coinbase);
-			debuglog("%s => BlockHeader Size = %d\nBlockHeader = %s%\n", coind->symbol, strlen(block_hex), block_hex);
 		}
 
 		if (g_current_algo->name && !strcmp("jha", g_current_algo->name)) {
@@ -269,14 +252,14 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 		}
 
 		vector<string>::const_iterator i;
-		for (i = templ->txdata.begin(); i != templ->txdata.end(); ++i)
-			sprintf(block_hex + strlen(block_hex), "%s", (*i).c_str());
+		for(i = templ->txdata.begin(); i != templ->txdata.end(); ++i)
+			sprintf(block_hex+strlen(block_hex), "%s", (*i).c_str());
 
 		// POS coins need a zero byte appended to block, the daemon replaces it with the signature
-		if (coind->pos)
+		if(coind->pos)
 			strcat(block_hex, "00");
 
-		if (!strcmp("DCR", coind->rpcencoding)) {
+		if(!strcmp("DCR", coind->rpcencoding)) {
 			// submit the regenerated block header
 			char hex[384];
 			hexlify(hex, submitvalues->header_bin, 180);
@@ -286,10 +269,8 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 				snprintf(block_hex, block_size, "%s", hex);
 		}
 
-		debuglog("%s => Final block size = %d\n", coind->symbol, strlen(block_hex));
-
 		bool b = coind_submit(coind, block_hex);
-		if (b)
+		if(b)
 		{
 			debuglog("*** ACCEPTED %s %d (diff %g) by %s (id: %d)\n", coind->name, templ->height,
 				target_to_diff(hash_int), client->sock->ip, client->userid);
@@ -303,18 +284,18 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 			//if (g_current_algo->merkle_func)
 			//	merkle_hash = g_current_algo->merkle_func;
 
-			merkle_hash((char*)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be) / 2);
+			merkle_hash((char *)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be)/2);
 
-			// isnt perfect, but it works
-	   //     if(strcmp(coind->symbol, "SIN") == 0)
-	   //       x22i_hash_hex((char *)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be)/2);
+      // isnt perfect, but it works
+ //     if(strcmp(coind->symbol, "SIN") == 0)
+ //       x22i_hash_hex((char *)submitvalues->header_bin, doublehash2, strlen(submitvalues->header_be)/2);
 
 			char hash1[1024];
 			memset(hash1, 0, 1024);
 
 			string_be(doublehash2, hash1);
 
-			if (coind->usegetwork && !strcmp("DCR", coind->rpcencoding)) {
+			if(coind->usegetwork && !strcmp("DCR", coind->rpcencoding)) {
 				// no merkle stuff
 				strcpy(hash1, submitvalues->hash_hex);
 			}
@@ -323,12 +304,12 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 				target_to_diff(coin_target), target_to_diff(hash_int),
 				hash1, submitvalues->hash_be, templ->has_segwit_txs);
 
-			if (!strcmp("DCR", coind->rpcencoding)) {
+			if(!strcmp("DCR", coind->rpcencoding)) {
 				// delay between dcrd and dcrwallet
 				sleep(1);
 			}
 
-			if (!strcmp(coind->lastnotifyhash, submitvalues->hash_be)) {
+			if(!strcmp(coind->lastnotifyhash,submitvalues->hash_be)) {
 				block_confirm(coind->id, submitvalues->hash_be);
 			}
 
@@ -352,17 +333,17 @@ static void client_do_submit(YAAMP_CLIENT* client, YAAMP_JOB* job, YAAMP_JOB_VAL
 	free(block_hex);
 }
 
-bool dump_submit_debug(const char* title, YAAMP_CLIENT* client, YAAMP_JOB* job, char* extranonce2, char* ntime, char* nonce)
+bool dump_submit_debug(const char *title, YAAMP_CLIENT *client, YAAMP_JOB *job, char *extranonce2, char *ntime, char *nonce)
 {
 	debuglog("ERROR %s, %s subs %d, job %x, %s, id %x, %d, %s, %s %s\n",
-		title, client->sock->ip, client->extranonce_subscribe, job ? job->id : 0, client->extranonce1,
+		title, client->sock->ip, client->extranonce_subscribe, job? job->id: 0, client->extranonce1,
 		client->extranonce1_id, client->extranonce2size, extranonce2, ntime, nonce);
 }
 
-void client_submit_error(YAAMP_CLIENT* client, YAAMP_JOB* job, int id, const char* message, char* extranonce2, char* ntime, char* nonce)
+void client_submit_error(YAAMP_CLIENT *client, YAAMP_JOB *job, int id, const char *message, char *extranonce2, char *ntime, char *nonce)
 {
-	//	if(job->templ->created+2 > time(NULL))
-	if (job && job->deleted)
+//	if(job->templ->created+2 > time(NULL))
+	if(job && job->deleted)
 		client_send_result(client, "true");
 
 	else
@@ -379,19 +360,19 @@ void client_submit_error(YAAMP_CLIENT* client, YAAMP_JOB* job, int id, const cha
 	object_unlock(job);
 }
 
-static bool valid_string_params(json_value* json_params)
+static bool valid_string_params(json_value *json_params)
 {
-	for (int p = 0; p < json_params->u.array.length; p++) {
+	for(int p=0; p < json_params->u.array.length; p++) {
 		if (!json_is_string(json_params->u.array.values[p]))
 			return false;
 	}
 	return true;
 }
 
-bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
+bool client_submit(YAAMP_CLIENT *client, json_value *json_params)
 {
 	// submit(worker_name, jobid, extranonce2, ntime, nonce):
-	if (json_params->u.array.length < 5 || !valid_string_params(json_params)) {
+	if(json_params->u.array.length<5 || !valid_string_params(json_params)) {
 		debuglog("%s - %s bad message\n", client->username, client->sock->ip);
 		client->submit_bad++;
 		return false;
@@ -423,8 +404,7 @@ bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
 			// lux optional field, smart contral root hashes (not mandatory on shares submit)
 			strncpy(extra, json_params->u.array.values[5]->u.string.ptr, 128);
 			string_lower(extra);
-		}
-		else {
+		} else {
 			// heavycoin vote
 			strncpy(vote, json_params->u.array.values[5]->u.string.ptr, 7);
 			string_lower(vote);
@@ -436,14 +416,14 @@ bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
 			jobid, extranonce2, ntime, nonce, extra);
 	}
 
-	YAAMP_JOB* job = (YAAMP_JOB*)object_find(&g_list_job, jobid, true);
-	if (!job)
+	YAAMP_JOB *job = (YAAMP_JOB *)object_find(&g_list_job, jobid, true);
+	if(!job)
 	{
 		client_submit_error(client, NULL, 21, "Invalid job id", extranonce2, ntime, nonce);
 		return true;
 	}
 
-	if (job->deleted)
+	if(job->deleted)
 	{
 		client_send_result(client, "true");
 		object_unlock(job);
@@ -453,14 +433,14 @@ bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
 
 	bool is_decred = job->coind && !strcmp("DCR", job->coind->rpcencoding);
 
-	YAAMP_JOB_TEMPLATE* templ = job->templ;
+	YAAMP_JOB_TEMPLATE *templ = job->templ;
 
-	if (strlen(nonce) != YAAMP_NONCE_SIZE * 2 || !ishexa(nonce, YAAMP_NONCE_SIZE * 2)) {
+	if(strlen(nonce) != YAAMP_NONCE_SIZE*2 || !ishexa(nonce, YAAMP_NONCE_SIZE*2)) {
 		client_submit_error(client, job, 20, "Invalid nonce size", extranonce2, ntime, nonce);
 		return true;
 	}
 
-	if (strcmp(ntime, templ->ntime))
+	if(strcmp(ntime, templ->ntime))
 	{
 		if (!ishexa(ntime, 8)) {
 			client_submit_error(client, job, 23, "Invalid ntime", extranonce2, ntime, nonce);
@@ -473,29 +453,29 @@ bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
 		}
 	}
 
-	YAAMP_SHARE* share = share_find(job->id, extranonce2, ntime, nonce, client->extranonce1);
-	if (share)
+	YAAMP_SHARE *share = share_find(job->id, extranonce2, ntime, nonce, client->extranonce1);
+	if(share)
 	{
 		client_submit_error(client, job, 22, "Duplicate share", extranonce2, ntime, nonce);
 		return true;
 	}
 
-	if (strlen(extranonce2) != client->extranonce2size * 2)
+	if(strlen(extranonce2) != client->extranonce2size*2)
 	{
 		client_submit_error(client, job, 24, "Invalid extranonce2 size", extranonce2, ntime, nonce);
 		return true;
 	}
 
 	// check if the submitted extranonce is valid
-	if (is_decred && client->extranonce2size > 4) {
+	if(is_decred && client->extranonce2size > 4) {
 		char extra1_id[16], extra2_id[16];
-		int cmpoft = client->extranonce2size * 2 - 8;
+		int cmpoft = client->extranonce2size*2 - 8;
 		strcpy(extra1_id, &client->extranonce1[cmpoft]);
 		strcpy(extra2_id, &extranonce2[cmpoft]);
-		int extradiff = (int)strcmp(extra2_id, extra1_id);
-		int extranull = (int)!strcmp(extra2_id, "00000000");
+		int extradiff = (int) strcmp(extra2_id, extra1_id);
+		int extranull = (int) !strcmp(extra2_id, "00000000");
 		if (extranull && client->extranonce2size > 8)
-			extranull = (int)!strcmp(&extranonce2[8], "00000000" "00000000");
+			extranull = (int) !strcmp(&extranonce2[8], "00000000" "00000000");
 		if (extranull) {
 			debuglog("extranonce %s is empty!, should be %s - %s\n", extranonce2, extra1_id, client->sock->ip);
 			client_submit_error(client, job, 27, "Invalid extranonce2 suffix", extranonce2, ntime, nonce);
@@ -509,7 +489,7 @@ bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
 			return true;
 		}
 	}
-	else if (!ishexa(extranonce2, client->extranonce2size * 2)) {
+	else if(!ishexa(extranonce2, client->extranonce2size*2)) {
 		client_submit_error(client, job, 27, "Invalid nonce2", extranonce2, ntime, nonce);
 		return true;
 	}
@@ -519,32 +499,32 @@ bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
 	YAAMP_JOB_VALUES submitvalues;
 	memset(&submitvalues, 0, sizeof(submitvalues));
 
-	if (is_decred)
+	if(is_decred)
 		build_submit_values_decred(&submitvalues, templ, client->extranonce1, extranonce2, ntime, nonce, vote, true);
 	else
 		build_submit_values(&submitvalues, templ, client->extranonce1, extranonce2, ntime, nonce);
 
-	if (templ->height && !strcmp(g_current_algo->name, "lyra2z")) {
+	if (templ->height && !strcmp(g_current_algo->name,"lyra2z")) {
 		lyra2z_height = templ->height;
 	}
 
-	uint64_t hash_int = *(uint64_t*)&submitvalues.hash_bin[24];
-	uint64_t user_target = share_to_target(client->difficulty_actual) * g_current_algo->diff_multiplier;
-	uint64_t coin_target = decode_compact(templ->nbits) / 0x10000;
+        uint64_t hash_int = * (uint64_t *) &submitvalues.hash_bin[24];
+        uint64_t user_target = share_to_target(client->difficulty_actual) * g_current_algo->diff_multiplier;
+        uint64_t coin_target = decode_compact(templ->nbits) / 0x10000;
 
-	if (g_debuglog_hash) {
-		debuglog("hash %016lx \n", hash_int);
-		debuglog("shar %016lx \n", user_target);
-		debuglog("coin %016lx \n", coin_target);
-	}
+if (g_debuglog_hash) {
+        debuglog("hash %016lx \n", hash_int);
+        debuglog("shar %016lx \n", user_target);
+        debuglog("coin %016lx \n", coin_target);
+}
 
-	if (hash_int > user_target)
+	if(hash_int > user_target)
 	{
 		client_submit_error(client, job, 26, "Low difficulty share", extranonce2, ntime, nonce);
 		return true;
 	}
 
-	if (job->coind)
+	if(job->coind)
 		client_do_submit(client, job, &submitvalues, extranonce2, ntime, nonce, vote);
 	else
 		remote_submit(client, job, &submitvalues, extranonce2, ntime, nonce);
@@ -558,34 +538,17 @@ bool client_submit(YAAMP_CLIENT* client, json_value* json_params)
 		if (!client_ask_stats(client)) client->stats = false;
 	}
 
-	uint64_t share_diff = diff_to_target(hash_int);
-	uint64_t coin_diff = diff_to_target(coin_target);
-	//	if (g_current_algo->diff_multiplier != 0) {
-	//		share_diff = share_diff / g_current_algo->diff_multiplier;
-	//	}
+	double share_diff = diff_to_target(hash_int);
+//	if (g_current_algo->diff_multiplier != 0) {
+//		share_diff = share_diff / g_current_algo->diff_multiplier;
+//	}
 
-	//if (g_debuglog_hash) {
+	if (g_debuglog_hash) {
 		// only log a few...
-
-	std::map<string, double>::iterator map_it;
-	map_it = hash_map.find(job->coind->symbol);
-	if (map_it != hash_map.end()) {
-		if (map_it->second < share_diff) {
-			hash_map[map_it->first] = share_diff;
-			debuglog("%s => submit %s (uid %d) with session max DIFF = %08lx / %08lx\n", job->coind->symbol,client->sock->ip, client->userid,
-				share_diff , coin_diff);
-		}
+		if (share_diff > (client->difficulty_actual * 16))
+			debuglog("submit %s (uid %d) %d, %s, %s, %s, %.3f/%.3f\n", client->sock->ip, client->userid,
+				jobid, extranonce2, ntime, nonce, share_diff, client->difficulty_actual);
 	}
-	else {
-		hash_map[job->coind->symbol] = share_diff;
-		debuglog("%s => submit %s (uid %d) with session max DIFF = %08lx / %08lx\n", job->coind->symbol, client->sock->ip, client->userid,
-			share_diff, coin_diff);
-	}
-
-	//if (fmod(share_diff, 9) < 1)
-	//	debuglog("submit %s (uid %d) %d, %s, %s, %s, %.3f/%.3f\n", client->sock->ip, client->userid,
-	//		jobid, extranonce2, ntime, nonce, share_diff, client->difficulty_actual);
-	////}
 
 	share_add(client, job, true, extranonce2, ntime, nonce, share_diff, 0);
 	object_unlock(job);

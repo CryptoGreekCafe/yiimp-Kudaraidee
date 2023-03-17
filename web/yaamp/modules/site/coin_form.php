@@ -177,12 +177,6 @@ echo CUFHtml::activeCheckBox($coin, 'auxpow');
 echo '<p class="formHint2">Merged mining</p>';
 echo CUFHtml::closeCtrlHolder();
 
-echo CUFHtml::openActiveCtrlHolder($coin, 'mine_port');
-echo CUFHtml::activeLabelEx($coin, 'mine_port');
-echo CUFHtml::activeTextField($coin, 'mine_port', array('maxlength'=>32,'style'=>'width: 120px;'));
-echo '<p class="formHint2">Assign to specifit stratum port or leave blank to use defalut port</p>';
-echo CUFHtml::closeCtrlHolder();
-
 echo CUFHtml::openActiveCtrlHolder($coin, 'max_miners');
 echo CUFHtml::activeLabelEx($coin, 'max_miners');
 echo CUFHtml::activeTextField($coin, 'max_miners', array('maxlength'=>32,'style'=>'width: 120px;'));

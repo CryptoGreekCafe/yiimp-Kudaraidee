@@ -190,10 +190,7 @@ void coind_init(YAAMP_COIND *coind)
 	bool valid = coind_validate_address(coind);
 	if(valid) return;
 
-	if(coind->symbol=="BTC"||coind->symbol=="BCH")
-		sprintf(params, "[\"legacy\"]", account);
-	else
-		sprintf(params, "[]", account);
+	sprintf(params, "[\"legacy\"]", account);
 
 	json_value *json = rpc_call(&coind->rpc, "getrawchangeaddress", params);
 	if(!json)

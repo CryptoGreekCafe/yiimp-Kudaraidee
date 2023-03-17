@@ -61,7 +61,6 @@ function cmp($a, $b)
 
 usort($algos, 'cmp');
 $total_coins = 0;
-$total_users = 0;
 $total_workers = 0;
 $total_solo_workers = 0;
 $showestimates = false;
@@ -86,21 +85,15 @@ foreach ($algos as $item)
         $coinsym = '<span title="' . $coin->name . '">' . $coinsym . '</a>';
     }
 
-
+  
     if (!$coins) continue;
-
-    //Total Share worker for this algo. Use it for accumulate total worker at the bottom
     $workers = getdbocount('db_workers', "algo=:algo and not password like '%m=solo%'", array(':algo' => $algo));
-
-    //Total Solo worker for this algo. Use it for accumulate total solo worker at the bottom
     $solo_workers = getdbocount('db_workers',"algo=:algo and password like '%m=solo%'", array(':algo'=>$algo));
-
     $hashrate = controller()
         ->memcache
         ->get_database_scalar("current_hashrate-$algo", "select hashrate from hashrate where algo=:algo order by time desc limit 1", array(
         ':algo' => $algo
     ));
-
     $hashrate_sfx = $hashrate ? Itoa2($hashrate) . 'h/s' : '-';
     $price = controller()
         ->memcache
@@ -161,45 +154,35 @@ foreach ($algos as $item)
             $name = substr($coin->name, 0, 20);
             $symbol = $coin->getOfficialSymbol();
             echo "<td align='left' valign='top' style='font-size: .8em;'><img width='10' src='" . $coin->image . "'>  <b>$name ($coin->symbol)</b> </td>";
-            $port_count = getdbocount('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $coin->symbol));  //0
-            $port_db = getdbosql('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $coin->symbol));   //null
+            $port_count = getdbocount('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $coin->symbol));
+            $port_db = getdbosql('db_stratums', "algo=:algo and symbol=:symbol", array(':algo' => $algo,':symbol' => $coin->symbol));
 
             $dontsell = $coin->dontsell;
             if ($dontsell == 1) echo "<td align='center' valign='top' style='font-size: .8em;'><img width=13 src='/images/cancel.png'></td>";
             else echo "<td align='center' valign='top' style='font-size: .8em;'><img width=13 src='/images/ok.png'></td>";
-
+			
 			$min_payout = max(floatval(YAAMP_PAYMENTS_MINI), floatval($coin->payout_min));
 			echo "<td align='center' style='font-size: .8em;'><b>".$min_payout." $symbol</b></td>";
 
-            //Test if mine_port settle. else use defalut port;
-            if($coin->mine_port!=null) $port=$coin->mine_port;
-            else $port = getAlgoPort($algo);
-
-
-			if ($port_count >= 1)
+			if ($port_count >= 1) 
 				echo "<td align='center' style='font-size: .8em;'><b>".$port_db->port."</b></td>";
-			else
+			else 
 				echo "<td align='center' style='font-size: .8em;'><b>$port</b></td>";
-
-			$users_total = getdbocount('db_accounts', "id IN (SELECT DISTINCT userid FROM workers)");
             
+			$users_total = getdbocount('db_accounts', "id IN (SELECT DISTINCT userid FROM workers)");
 			$users_coins = getdbocount('db_accounts', "coinid=:coinid and (id IN (SELECT DISTINCT userid FROM workers))", array(':coinid' => $coin->id));
-
-
-			if ($port_count >= 1)       //active users count
+			if ($port_count >= 1) 
 				echo "<td align='center' style='font-size: .8em;'>$users_coins</td>";
-			else
+			else	
 				echo "<td align='center' style='font-size: .8em;'>$users_total</td>";
-
-            if ($port_count == 1) {     //detail workers count
-                $workers_coins = getdbocount('db_workers', "algo=:algo and pid=:pid and not password like '%m=solo%'", array(':algo' => $algo,':pid' => $port_db->pid));
-                $solo_workers_coins = getdbocount('db_workers', "algo=:algo and pid=:pid and password like '%m=solo%'", array(':algo' => $algo,':pid' => $port_db->pid));
-
-                echo "<td align='center' style='font-size: .8em;'>$workers_coins / $solo_workers_coins </td>";
-            }
+            
+			$workers_coins = getdbocount('db_workers', "algo=:algo and pid=:pid and not password like '%m=solo%'", array(':algo' => $algo,':pid' => $port_db->pid));
+            $solo_workers_coins = getdbocount('db_workers', "algo=:algo and pid=:pid and password like '%m=solo%'", array(':algo' => $algo,':pid' => $port_db->pid));
+            if ($port_count == 1) 
+	    		echo "<td align='center' style='font-size: .8em;'>$workers_coins / $solo_workers_coins </td>";
 			else
 				echo "<td align='center' style='font-size: .8em;'>$workers / $solo_workers </td>";
-
+			
             $pool_hash = yaamp_coin_rate($coin->id);
             $pool_hash_sfx = $pool_hash ? Itoa2($pool_hash) . 'h/s' : '0 h/s';
 			$pool_shared_hash = yaamp_coin_shared_rate($coin->id);
@@ -207,7 +190,7 @@ foreach ($algos as $item)
 			$pool_solo_hash = yaamp_coin_solo_rate($coin->id);
 			$pool_solo_hash_sfx = $pool_solo_hash ? Itoa2($pool_solo_hash) . 'h/s' : '0 h/s';
 			echo "<td align='center' style='font-size: .8em;'>$pool_shared_hash_sfx / $pool_solo_hash_sfx / $pool_hash_sfx</td>";
-
+            
             $min_ttf = $coin->network_ttf > 0 ? min($coin->actual_ttf, $coin->network_ttf) : $coin->actual_ttf;
 
             $network_hash = controller()
@@ -231,12 +214,11 @@ foreach ($algos as $item)
                         ->memcache
                         ->set("yiimp-nethashrate-{$coin->symbol}", $network_hash, 60);
                 }
+		else
+		{
+			$network_hash = $coin->difficulty * 0x100000000 / ($min_ttf? $min_ttf: 60);
+		}
             }
-		    else
-		    {
-			    $network_hash = $coin->difficulty * 0x100000000 / ($min_ttf? $min_ttf: 60);
-		    }
-
             $network_hash = $network_hash ? Itoa2($network_hash) . 'h/s' : '';
             echo "<td align='center' style='font-size: .8em;' data='$pool_hash'>$network_hash</td>";
             echo "<td align='center' style='font-size: .8em;'>{$fees}% / {$fees_solo}% </td>";
@@ -245,14 +227,12 @@ foreach ($algos as $item)
             echo "<td align='center' style='font-size: .8em;'>$btcmhd</td>";
             echo "</tr>";
         }
-
-
-        $total_coins += $coins;
-        if($users_total==null)  $total_users=0;
-        else $total_users=$users_total;
-        $total_workers += $workers;
-        $total_solo_workers += $solo_workers;
     }
+
+	$total_coins += $coins;
+	$total_users = $users_total;
+	$total_workers += $workers;
+	$total_solo_workers += $solo_workers;
 }
 
 echo "</tbody>";

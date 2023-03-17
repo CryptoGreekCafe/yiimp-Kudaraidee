@@ -136,11 +136,6 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 	}
 
 	res = rpc_send_raw(rpc, data, strlen(data));
-	if (strstr(data, "submitblock"))
-		debuglog("%s => Sending Raw Byte Count = %d\n", rpc->coind->symbol, res);
-	else if (strstr(data, "getaddressinfo"))
-		debuglog("%s => Debuging getaddressinfo\n", rpc->coind->symbol);
-
 	if(res <= 0)
 	{
 		CommonUnlock(&rpc->mutex);
@@ -180,7 +175,7 @@ char *rpc_do_call(YAAMP_RPC *rpc, char const *data)
 
 	int status = atoi(p+1);
 	if(status != 200)
-		debuglog("ERROR: rpc_do_call: %s:%d %d - data: %s\n", rpc->host, rpc->port, status,data);
+		debuglog("ERROR: rpc_do_call: %s:%d %d\n", rpc->host, rpc->port, status);
 
 	char tmp[1024];
 
