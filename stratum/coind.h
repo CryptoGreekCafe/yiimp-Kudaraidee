@@ -98,6 +98,7 @@ bool coind_can_mine(YAAMP_COIND *coind, bool isaux=false);
 void coind_sort();
 
 bool coind_submit(YAAMP_COIND *coind, const char *block);
+bool coind_pprpcsb(YAAMP_COIND *coind, const char* header_hash, const char* mix_hash, const char* nonce64);
 bool coind_submitgetauxblock(YAAMP_COIND *coind, const char *hash, const char *block);
 
 void coind_init(YAAMP_COIND *coind);
@@ -107,7 +108,3 @@ void coind_terminate(YAAMP_COIND *coind);
 bool coind_create_job(YAAMP_COIND *coind, bool force=false);
 
 bool coind_validate_user_address(YAAMP_COIND *coind, char* const address);
-
-
-
-
