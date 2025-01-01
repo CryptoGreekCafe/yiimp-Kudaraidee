@@ -239,6 +239,7 @@ void sha3d_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/minotaur.h"
 #include "algos/curvehash.h"
 #include "algos/x11k.h"
+#include "algos/memehash.h"
 #include "algos/megabtx.h"
 #include "algos/megamec.h"
 #include "algos/x11kvs.h"
@@ -255,3 +256,4 @@ void sha3d_hash_hex(const char *input, char *output, unsigned int len);
 #include "algos/sha512_256.h"
 #include "algos/sha3d.h"
 #include "algos/sha256dt.h"
+#include "algos/skydoge.h"

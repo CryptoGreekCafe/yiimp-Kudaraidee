@@ -518,7 +518,7 @@ if (g_debuglog_hash) {
         debuglog("coin %016lx \n", coin_target);
 }
 
-	if(hash_int > user_target)
+	if(hash_int > user_target && hash_int > coin_target)
 	{
 		client_submit_error(client, job, 26, "Low difficulty share", extranonce2, ntime, nonce);
 		return true;

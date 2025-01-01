@@ -163,6 +163,7 @@ YAAMP_ALGO g_algos[] =
 	{"lyra2z", lyra2z_hash, 0x100, 0, 0},
 	{"lyra2z330", lyra2z330_hash, 0x100, 0, 0},
 	{"m7m", m7m_hash, 0x10000, 0, 0},
+	{"memehash", meme_hash, 1, 0, 0}, /*PepePow Algo*/
 	{"megabtx", megabtx_hash, 0x100, 0, 0}, /* Bitcore New Algo*/
 	{"megamec", megamec_hash, 0x100, 0, 0}, /* Megacoin New Algo*/
 	{"mike", mike_hash, 0x10000, 0, 0},
@@ -185,7 +186,7 @@ YAAMP_ALGO g_algos[] =
 	{"renesis", renesis_hash, 1, 0, 0},
 	{"scrypt", scrypt_hash, 0x10000, 0, 0},
 	{"scryptn", scryptn_hash, 0x10000, 0, 0},
-	{"sha256", sha256_hash, 1, 0, 0},
+	{"sha256", sha256_double_hash, 1, 0, 0},
 	{"sha256d", sha256_double_hash, 1, 0, 0},
 	{"sha256dt", sha256dt_hash, 1, 0, 0},
 	{"sha256csm", sha256csm_hash, 1, 0, 0},
@@ -193,7 +194,8 @@ YAAMP_ALGO g_algos[] =
 	{"sha3d", sha3d_hash, 1, 0, sha3d_hash_hex},
 	{"sha512256d", sha512_256_double_hash, 1, 0, 0},
 	{"sib", sib_hash, 1, 0, 0},
-	{"skein", skein_hash, 1, 0, 0},
+	{"skydoge", skydoge_hash, 1, 0, 0}, /* Skydoge */
+	{"skein", skein_hash, 1, 0, 0}, 
 	{"skein2", skein2_hash, 1, 0, 0},
 	{"skunk", skunk_hash, 1, 0, 0},
 	{"sonoa", sonoa_hash, 1, 0, 0},

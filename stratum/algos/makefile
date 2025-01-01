@@ -15,7 +15,7 @@ SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c lyra2z330.c Lyra2-z.c Sponge.c alli
 	bitcore.c timetravel.c x11evo.c x16r.c x16rv2.c x16s.c xevan.c bastion.c hmq17.c sonoa.c \
 	bmw.c luffa.c pentablake.c vitalium.c whirlpool.c whirlpoolx.c zr5.c \
 	scrypt.c scryptn.c sha256.c sha256t.c sha256csm.c \
-	x16rt.c sha256-d.c minotaur.c minotaurx.c curvehash.c megabtx.c megamec.c \
+	x16rt.c sha256-d.c minotaur.c minotaurx.c curvehash.c megabtx.c megamec.c memehash.c \
 	yescrypt.c yescrypt-opt.c sha256_Y.c \
 	yespower/yespower-platform.c yespower/yespower-combined.c sha256-P.c yespower/yespower-blake2b.c yespower/crypto/blake2b-yp.c \
 	a5a.c a5amath.c m7m.c magimath.cpp velvet.c \
@@ -28,7 +28,7 @@ SOURCES=lyra2re.c lyra2v2.c Lyra2.c lyra2z.c lyra2z330.c Lyra2-z.c Sponge.c alli
 	cryptonote/cryptonight_dark.c cryptonote/cryptonight_dark_lite.c cryptonote/cryptonight_fast.c \
 	cryptonote/cryptonight_lite.c cryptonote/cryptonight_soft_shell.c cryptonote/cryptonight_turtle.c \
 	cryptonote/cryptonight_turtle_lite.c anime.c \
-	heavyhash/heavyhash.c heavyhash/keccak_tiny.c cosa.c 0x10.c mike.c sha512_256.c sha3d.c sha256dt.c
+	heavyhash/heavyhash.c heavyhash/keccak_tiny.c cosa.c 0x10.c mike.c sha512_256.c sha3d.c sha256dt.c skydoge.c
 	
 OBJECTS=$(SOURCES:%.c=%.o) $(SOURCES:%.cpp=%.o) $(SOURCES:%.cc=%.o)
 OUTPUT=libalgos.a

@@ -616,7 +616,7 @@ void *client_thread(void *p)
 		else if(!strcmp(method, "mining.get_transactions"))
 			b = client_send_result(client, "[]");
 
-		else if(!strcmp(method, "mining.multi_version"))
+		else if(!strcmp(method, "mining.configure"))
 			b = client_send_result(client, "false"); // ASICBOOST
 
 		else if(!strcmp(method, "mining.extranonce.subscribe"))
