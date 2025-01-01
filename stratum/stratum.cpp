@@ -76,6 +76,9 @@ volatile bool g_exiting = false;
 void *stratum_thread(void *p);
 void *monitor_thread(void *p);
 
+bool is_kawpow = false;
+bool is_firopow = false;
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 static void scrypt_hash(const char* input, char* output, uint32_t len)
@@ -246,6 +249,9 @@ YAAMP_ALGO g_algos[] =
 	{"whirlpool", whirlpool_hash, 1, 0 }, /* sha256d merkleroot */
 	{"whirlpoolx", whirlpoolx_hash, 1, 0, 0},
 	{"zr5", zr5_hash, 1, 0, 0},
+	{"sha256", sha256_double_hash, 1, 0, 0},
+	{"kawpow", sha256_double_hash, 0x100, 0, 0},
+	{"firopow", sha256_double_hash, 1, 0, 0},
 	{"", NULL, 0, 0},
 };
 
