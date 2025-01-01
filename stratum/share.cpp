@@ -359,5 +359,3 @@ void submit_prune(YAAMP_DB *db)
 	g_list_submit.Leave();
 	if(count) db_query(db, buffer);
 }
-
-
