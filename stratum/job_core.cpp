@@ -124,9 +124,3 @@ bool job_can_mine(YAAMP_JOB *job)
 
 	return false;
 }
-
-
-
-
-
-
