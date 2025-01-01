@@ -107,6 +107,9 @@ void job_broadcast(YAAMP_JOB *job)
 
 	YAAMP_JOB_TEMPLATE *templ = job->templ;
 
+	char buffer[YAAMP_SMALLBUFSIZE];
+	job_mining_notify_buffer(job, buffer);
+	
 	g_list_client.Enter();
 	for(CLI li = g_list_client.first; li; li = li->next)
 	{
@@ -130,6 +133,8 @@ void job_broadcast(YAAMP_JOB *job)
 		client->jobid_sent = job->id;
 		client_add_job_history(client, job->id);
 
+		client_adjust_difficulty(client);
+		
 		setsockopt(client->sock->sock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
 
 		if (socket_send_raw(client->sock, buffer, strlen(buffer)) == -1) {
