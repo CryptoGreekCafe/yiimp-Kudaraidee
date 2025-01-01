@@ -80,7 +80,6 @@ void base64_encode(char *base64, const char *normal);
 void base64_decode(char *normal, const char *base64);
 
 void ser_number(int n, char *s);
-void ser_compactsize(uint64_t nSize, char *a);
 
 void ser_string_be(const char *input, char *output, int len);
 void ser_string_be2(const char *input, char *output, int len);
@@ -97,9 +96,11 @@ unsigned int htoi(const char *s);
 uint64_t htoi64(const char *s);
 
 uint64_t decode_compact(const char *input);
-uint64_t sharetotarg(double diff);
 
 uint64_t diff_to_target(double difficulty);
+void diff_to_target(uint32_t *target, double diff);
+void diff_to_target(uint256& target, double diff);
+
 double target_to_diff(uint64_t target);
 
 uint64_t get_hash_difficulty(unsigned char *input);
@@ -114,6 +115,9 @@ void string_lower(char *s);
 void string_upper(char *s);
 
 int getblocheight(const char *coinb1);
+
+bool valid_string_params(json_value *json_params);
+void decode_nbits(uint256& target_, unsigned int nbits);
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -139,5 +143,3 @@ static inline uint32_t bswap32(uint32_t x) {
 	__asm__ __volatile__ ("bswapl %0" : "=r" (x) : "0" (x));
 	return x;
 }
-
-uint64_t share_to_target(double diff);
