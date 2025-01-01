@@ -73,11 +73,11 @@ struct ifaddrs *g_ifaddr;
 
 volatile bool g_exiting = false;
 
-void *stratum_thread(void *p);
-void *monitor_thread(void *p);
-
 bool is_kawpow = false;
 bool is_firopow = false;
+
+void *stratum_thread(void *p);
+void *monitor_thread(void *p);
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -531,4 +531,6 @@ void *stratum_thread(void *p)
 
 		pthread_detach(thread);
 	}
+
+	return (void*)0;
 }
