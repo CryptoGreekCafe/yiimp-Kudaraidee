@@ -479,26 +479,6 @@ void ser_number(int n, char *a)
 //	printf("ser_number %d, %s\n", n, a);
 }
 
-void ser_compactsize(uint64_t nSize, char *a)
-{
-	if (nSize < 253)
-	{
-		sprintf(a, "%02lx", nSize);
-	}
-	else if (nSize <= (unsigned short)-1)
-	{
-		sprintf(a, "%02x%04lx", 253, nSize);
-	}
-	else if (nSize <= (unsigned int)-1)
-	{
-		sprintf(a, "%02x%08lx", 254, nSize);
-	}
-	else
-	{
-		sprintf(a, "%02x%016lx", 255, nSize);
-	}
-}
-
 void ser_string_be(const char *input, char *output, int len)
 {
 	for(int i=0; i<len; i++)
@@ -539,6 +519,28 @@ uint64_t diff_to_target(double difficulty)
 	return t;
 }
 
+void diff_to_target(uint32_t *target, double diff)
+{
+        uint64_t m;
+        int k;
+
+        for (k = 6; k > 0 && diff > 1.0; k--)
+                diff /= 4294967296.0;
+        m = (uint64_t)(4294901760.0 / diff);
+        if (m == 0 && k == 6)
+                memset(target, 0xff, 32);
+        else {
+                memset(target, 0, 32);
+                target[k] = (uint32_t)m;
+                target[k + 1] = (uint32_t)(m >> 32);
+        }
+}
+
+void diff_to_target(uint256& target, double diff)
+{
+        diff_to_target((uint32_t*)&target, diff);
+}
+
 double target_to_diff(uint64_t target)
 {
 	if(!target) return 0;
@@ -576,31 +578,6 @@ uint64_t decode_compact(const char *input)
 //
 //	debuglog("decode_compact %s -> %016llx\n", input, v);
 	return v;
-}
-
-uint64_t sharetotarg(double diff)
-{
-        int i, shift = 29;
-        unsigned char targ[32];
-        for (i=0; i<32; i++)
-            targ[i]=0;
-        double ftarg = (double)0x0000ffff / diff;
-        while (ftarg < (double)0x00008000) {
-            shift--;
-            ftarg *= 256.0;
-        }
-        while (ftarg >= (double)0x00800000) {
-            shift++;
-            ftarg /= 256.0;
-        }
-        uint32_t nBits = (int)ftarg + (shift << 24);
-        shift = (nBits >> 24) & 0x00ff;
-        nBits &= 0x00FFFFFF;
-        targ[shift - 1] = nBits >> 16;
-        targ[shift - 2] = nBits >> 8;
-        targ[shift - 3] = nBits;
-        uint64_t starget = * (uint64_t *) &targ[24];
-        return (starget);
 }
 
 //def uint256_from_compact(c):
@@ -762,6 +739,35 @@ void string_upper(char *s)
 	  s[i] = toupper(s[i]);
 }
 
+bool valid_string_params(json_value *json_params)
+{
+        for(int p=0; p < json_params->u.array.length; p++) {
+                if (!json_is_string(json_params->u.array.values[p]))
+                        return false;
+        }
+        return true;
+}
+
+void decode_nbits(uint256& target_, unsigned int nbits)
+{
+    unsigned char target[32];
+    memset(target, 0, sizeof(target));
+
+    unsigned int exp = nbits >> 24;
+    unsigned int mant = nbits & 0xffffff;
+
+    unsigned int shift = 8 * (exp - 3);
+    unsigned int sb = shift / 8;
+    unsigned int rb = shift % 8;
+
+    // little-endian
+    target[sb] = (mant << rb);
+    target[sb + 1] = (mant >> (8-rb));
+    target[sb + 2] = (mant >> (16-rb));
+    target[sb + 3] = (mant >> (24-rb));
+
+    memcpy(&target_, target, 32);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -812,37 +818,4 @@ void sha256_hash_hex(const char *input, char *output, unsigned int len)
 
 	sha256_hash(input, output1, len);
 	hexlify(output, (unsigned char *)output1, 32);
-}
-
-void sha3d_hash_hex(const char *input, char *output, unsigned int len)
-{
-	char output1[32];
-
-	sha3d_hash(input, output1, len);
-	hexlify(output, (unsigned char *)output1, 32);
-}
-
-uint64_t share_to_target(double diff)
-{
-        int i, shift = 29;
-        unsigned char targ[32];
-        for (i=0; i<32; i++)
-            targ[i]=0;
-        double ftarg = (double)0x0000ffff / diff;
-        while (ftarg < (double)0x00008000) {
-            shift--;
-            ftarg *= 256.0;
-        }
-        while (ftarg >= (double)0x00800000) {
-            shift++;
-            ftarg /= 256.0;
-        }
-        uint32_t nBits = (int)ftarg + (shift << 24);
-        shift = (nBits >> 24) & 0x00ff;
-        nBits &= 0x00FFFFFF;
-        targ[shift - 1] = nBits >> 16;
-        targ[shift - 2] = nBits >> 8;
-        targ[shift - 3] = nBits;
-        uint64_t starget = * (uint64_t *) &targ[24];
-        return (starget);
 }
