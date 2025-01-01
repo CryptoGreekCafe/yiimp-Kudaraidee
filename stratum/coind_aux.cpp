@@ -104,7 +104,3 @@ vector<string> coind_aux_merkle_branch(YAAMP_COIND_AUX **auxs, int size, int ind
 
 	return lresult;
 }
-
-
-
-
