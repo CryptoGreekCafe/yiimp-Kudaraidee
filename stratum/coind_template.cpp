@@ -1,3 +1,6 @@
+// Copyright (c) 2023 barrystyle
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "stratum.h"
 
@@ -233,9 +236,14 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 	if(coind->usememorypool)
 		return coind_create_template_memorypool(coind);
 
-	char params[512] = "[{}]";
-	if(!strcmp(coind->symbol, "PPC")) strcpy(params, "[]");
-	else if(g_stratum_segwit) strcpy(params, "[{\"rules\":[\"segwit\"]}]");
+	char params[512];
+	memset(params, 0, sizeof(params));
+	if (is_firopow) {
+		sprintf(params, "[{\"mode\":\"template\"},\"%s\"]", coind->wallet);
+	}
+	if (is_kawpow) {
+		sprintf(params, "[]");
+	}
 
 	json_value *json = rpc_call(&coind->rpc, "getblocktemplate", params);
 	if(!json || json_is_null(json))
@@ -307,7 +315,16 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 	strcpy(templ->prevhash_hex, prev ? prev : "");
 	const char *flags = json_get_string(json_coinbaseaux, "flags");
 	strcpy(templ->flags, flags ? flags : "");
-	strcpy(templ->priceinfo, "");
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if (is_firopow) {
+		templ->header_hash = uint256();
+		const char *pprpcheader = json_get_string(json_result, "pprpcheader");
+		templ->header_hash = uint256S(json_get_string(json_result, "pprpcheader"));
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// LBC Claim Tree (with wallet gbt patch)
 	const char *claim = json_get_string(json_result, "claimtrie");
@@ -331,13 +348,6 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 		if (claim) {
 			strcpy(templ->claim_hex, claim);
 			debuglog("claim_hex: %s\n", templ->claim_hex);
-		}
-	}
-	else if (strcmp(coind->symbol, "BITC") == 0) {
-		if (strlen(json_get_string(json_result, "priceinfo")) < 1000) {
-			templ->needpriceinfo = json_get_bool(json_result, "needpriceinfo");
-            if (templ->needpriceinfo)
-				strcpy(templ->priceinfo, json_get_string(json_result, "priceinfo"));
 		}
 	}
 
@@ -504,6 +514,13 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 		coind_aux_build_auxs(templ);
 
 	coinbase_create(coind, templ, json_result);
+
+	update_epoch(coind->id, templ->height);
+	templ->header_seed = get_kawpow_seed(templ->height);
+	if (is_kawpow) {
+		templ->header_hash = build_header_hash(templ);
+	}
+
 	json_value_free(json);
 
 	return templ;
@@ -605,18 +622,3 @@ bool coind_create_job(YAAMP_COIND *coind, bool force)
 
 	return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
