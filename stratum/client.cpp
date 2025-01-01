@@ -3,15 +3,6 @@
 
 bool client_suggest_difficulty(YAAMP_CLIENT *client, json_value *json_params)
 {
-	if(json_params->u.array.length>0)
-	{
-		double diff = client_normalize_difficulty(json_params->u.array.values[0]->u.dbl);
-		uint64_t user_target = diff_to_target(diff);
-
-		if(user_target >= YAAMP_MINDIFF && user_target <= YAAMP_MAXDIFF)
-			client->difficulty_actual = diff;
-	}
-
 	client_send_result(client, "true");
 	return true;
 }
@@ -24,8 +15,7 @@ bool client_suggest_target(YAAMP_CLIENT *client, json_value *json_params)
 
 bool client_subscribe(YAAMP_CLIENT *client, json_value *json_params)
 {
-	//if(client_find_my_ip(client->sock->ip)) return false;
-	get_next_extraonce1(client->extranonce1_default);
+	get_nonce_prefix(client->extranonce1_default);
 
 	client->extranonce2size_default = YAAMP_EXTRANONCE2_SIZE;
 	client->difficulty_actual = g_stratum_difficulty;
@@ -48,11 +38,8 @@ bool client_subscribe(YAAMP_CLIENT *client, json_value *json_params)
 		if (json_params->u.array.values[0]->u.string.ptr)
 			strncpy(client->version, json_params->u.array.values[0]->u.string.ptr, 1023);
 
-		if (strstr(client->version, "NiceHash"))
-      client->difficulty_actual = g_stratum_nicehash_difficulty;
-
-		if(strstr(client->version, "proxy") || strstr(client->version, "/3."))
-      client->reconnectable = false;
+		if(strstr(client->version, "NiceHash") || strstr(client->version, "proxy") || strstr(client->version, "/3."))
+			client->reconnectable = false;
 
 		if(strstr(client->version, "ccminer")) client->stats = true;
 		if(strstr(client->version, "cpuminer-multi")) client->stats = true;
@@ -121,8 +108,7 @@ bool client_subscribe(YAAMP_CLIENT *client, json_value *json_params)
 		debuglog("new client with nonce %s\n", client->extranonce1);
 	}
 
-	client_send_result(client, "[[[\"mining.set_difficulty\",\"%.3g\"],[\"mining.notify\",\"%s\"]],\"%s\",%d]",
-		client->difficulty_actual, client->notify_id, client->extranonce1, client->extranonce2size);
+	kawpow_send_nonceprefix(client);
 
 	return true;
 }
@@ -231,13 +217,12 @@ bool client_authorize(YAAMP_CLIENT *client, json_value *json_params)
 			return false;
 		}
 	}
-/*
-	if (!is_base58(client->username)) 
-	{
+
+	if (!is_base58(client->username)) {
 		clientlog(client, "bad mining address %s", client->username);
 		return false;
 	}
-*/	
+
 	bool reset = client_initialize_multialgo(client);
 	if(reset) return false;
 
@@ -265,9 +250,9 @@ bool client_authorize(YAAMP_CLIENT *client, json_value *json_params)
 		CommonUnlock(&g_db_mutex);
 	}
 
+#if 0
 	// when auto exchange is disabled, only authorize good wallet address...
-	if (!g_autoexchange && !client_validate_user_address(client)) 
-	{
+	if (!g_autoexchange && !client_validate_user_address(client)) {
 
 		clientlog(client, "bad mining address %s", client->username);
 		client_send_result(client, "false");
@@ -278,9 +263,10 @@ bool client_authorize(YAAMP_CLIENT *client, json_value *json_params)
 
 		return false;
 	}
-	
+#endif
+
 	client_send_result(client, "true");
-	client_send_difficulty(client, client->difficulty_actual);
+	client_send_difficulty(client, client->difficulty_actual, true);
 
 	if(client->jobid_locked)
 		job_send_jobid(client, client->jobid_locked);
@@ -616,7 +602,7 @@ void *client_thread(void *p)
 		else if(!strcmp(method, "mining.get_transactions"))
 			b = client_send_result(client, "[]");
 
-		else if(!strcmp(method, "mining.configure"))
+		else if(!strcmp(method, "mining.multi_version"))
 			b = client_send_result(client, "false"); // ASICBOOST
 
 		else if(!strcmp(method, "mining.extranonce.subscribe"))
