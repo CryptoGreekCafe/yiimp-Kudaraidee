@@ -130,10 +130,10 @@ extern volatile bool g_exiting;
 #include "coind.h"
 #include "remote.h"
 #include "share.h"
-#include "kawpow/hash.h"
-#include "kawpow/kawpow.h"
-#include "firopow/hash.h"
-#include "firopow/overrides.h"
+#include "/kawpow/hash.h"
+#include "/kawpow/kawpow.h"
+#include "/firopow/hash.h"
+#include "/firopow/overrides.h"
 
 extern YAAMP_DB *g_db;
 extern YAAMP_ALGO g_algos[];
@@ -145,10 +145,20 @@ extern bool g_autoexchange;
 
 YAAMP_ALGO *stratum_find_algo(const char *name);
 
+extern "C"
+{
 void sha256_hash(const char *input, char *output, unsigned int len);
 void sha256_double_hash(const char *input, char *output, unsigned int len);
+
+void scrypt_1024_1_1_256(const unsigned char *input, unsigned char *output);
+void scrypt_N_R_1_256(const char* input, char* output, uint32_t N, uint32_t R, uint32_t len);
+}
+
 void sha256_hash_hex(const char *input, char *output, unsigned int len);
 void sha256_double_hash_hex(const char *input, char *output, unsigned int len);
+void sha3d_hash_hex(const char *input, char *output, unsigned int len);
+
+id sha256_double_hash_hex(const char *input, char *output, unsigned int len);
 
 #include "algos/a5a.h"
 #include "algos/c11.h"

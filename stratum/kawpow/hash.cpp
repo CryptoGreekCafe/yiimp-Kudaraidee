@@ -1,6 +1,4 @@
 #include "stratum.h"
-#include "algos/firopow/hash.h"
-#include "algos/kawpow/kawpow.h"
 #include "include/ethash/progpow.hpp"
 #include "utilstrencodings.h // Added for uint256
 #include <stdint.h>
