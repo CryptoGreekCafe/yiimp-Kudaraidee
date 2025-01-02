@@ -2,164 +2,53 @@
 // Copyright 2018-2019 Pawel Bylica.
 // Licensed under the Apache License, Version 2.0.
 
-/// @file
-///
-/// API design decisions:
-///
-/// 1. Signed integer type is used whenever the size of the type is not
-///    restricted by the Ethash specification.
-///    See http://www.aristeia.com/Papers/C++ReportColumns/sep95.pdf.
-///    See https://stackoverflow.com/questions/10168079/why-is-size-t-unsigned/.
-///    See https://github.com/Microsoft/GSL/issues/171.
-
 #pragma once
 
-#include <kawpow/include/ethash/ethash.h>
-#include <kawpow/include/ethash/hash_types.hpp>
+#include <kawpow/include/ethash/ethash.hpp>
 
-#include <cstdint>
-#include <cstring>
-#include <memory>
+#include <string>
 
-namespace ethash
+template <typename Hash>
+inline std::string to_hex(const Hash& h)
 {
-constexpr auto revision = ETHASH_REVISION;
-
-static constexpr int epoch_length = ETHASH_EPOCH_LENGTH;
-static constexpr int light_cache_item_size = ETHASH_LIGHT_CACHE_ITEM_SIZE;
-static constexpr int full_dataset_item_size = ETHASH_FULL_DATASET_ITEM_SIZE;
-static constexpr int num_dataset_accesses = ETHASH_NUM_DATASET_ACCESSES;
-
-using epoch_context = ethash_epoch_context;
-using epoch_context_full = ethash_epoch_context_full;
-
-using result = ethash_result;
-
-/// Constructs a 256-bit hash from an array of bytes.
-///
-/// @param bytes  A pointer to array of at least 32 bytes.
-/// @return       The constructed hash.
-inline hash256 hash256_from_bytes(const uint8_t bytes[32]) noexcept
-{
-    hash256 h;
-    std::memcpy(&h, bytes, sizeof(h));
-    return h;
+    static const auto hex_chars = "0123456789abcdef";
+    std::string str;
+    str.reserve(sizeof(h) * 2);
+    for (auto b : h.bytes)
+    {
+        str.push_back(hex_chars[uint8_t(b) >> 4]);
+        str.push_back(hex_chars[uint8_t(b) & 0xf]);
+    }
+    return str;
 }
 
-struct search_result
+inline ethash::hash256 to_hash256(const std::string& hex)
 {
-    bool solution_found = false;
-    uint64_t nonce = 0;
-    hash256 final_hash = {};
-    hash256 mix_hash = {};
+    auto parse_digit = [](char d) -> int { return d <= '9' ? (d - '0') : (d - 'a' + 10); };
 
-    search_result() noexcept = default;
-
-    search_result(result res, uint64_t n) noexcept
-      : solution_found(true), nonce(n), final_hash(res.final_hash), mix_hash(res.mix_hash)
-    {}
-};
-
-
-/// Alias for ethash_calculate_light_cache_num_items().
-static constexpr auto calculate_light_cache_num_items = ethash_calculate_light_cache_num_items;
-
-/// Alias for ethash_calculate_full_dataset_num_items().
-static constexpr auto calculate_full_dataset_num_items = ethash_calculate_full_dataset_num_items;
-
-/// Alias for ethash_calculate_epoch_seed().
-static constexpr auto calculate_epoch_seed = ethash_calculate_epoch_seed;
-
-/**
- * Coverts the number of items of a light cache to size in bytes.
- *
- * @param num_items  The number of items in the light cache.
- * @return           The size of the light cache in bytes.
- */
-inline constexpr size_t get_light_cache_size(int num_items) noexcept
-{
-    return static_cast<size_t>(num_items) * light_cache_item_size;
+    ethash::hash256 hash = {};
+    for (size_t i = 1; i < hex.size(); i += 2)
+    {
+        int h = parse_digit(hex[i - 1]);
+        int l = parse_digit(hex[i]);
+        hash.bytes[i / 2] = uint8_t((h << 4) | l);
+    }
+    return hash;
 }
 
-/**
- * Coverts the number of items of a full dataset to size in bytes.
- *
- * @param num_items  The number of items in the full dataset.
- * @return           The size of the full dataset in bytes.
- */
-inline constexpr uint64_t get_full_dataset_size(int num_items) noexcept
+/// Comparison operator for hash256 to be used in unit tests.
+inline bool operator==(const ethash::hash256& a, const ethash::hash256& b) noexcept
 {
-    return static_cast<uint64_t>(num_items) * full_dataset_item_size;
+    return std::memcmp(a.bytes, b.bytes, sizeof(a)) == 0;
 }
 
-/// Owned unique pointer to an epoch context.
-using epoch_context_ptr = std::unique_ptr<epoch_context, decltype(&ethash_destroy_epoch_context)>;
-
-using epoch_context_full_ptr =
-    std::unique_ptr<epoch_context_full, decltype(&ethash_destroy_epoch_context_full)>;
-
-/// Creates Ethash epoch context.
-///
-/// This is a wrapper for ethash_create_epoch_number C function that returns
-/// the context as a smart pointer which handles the destruction of the context.
-inline epoch_context_ptr create_epoch_context(int epoch_number) noexcept
+inline bool operator!=(const ethash::hash256& a, const ethash::hash256& b) noexcept
 {
-    return {ethash_create_epoch_context(epoch_number), ethash_destroy_epoch_context};
+    return !(a == b);
 }
 
-inline epoch_context_full_ptr create_epoch_context_full(int epoch_number) noexcept
+inline const ethash::epoch_context& get_ethash_epoch_context_0() noexcept
 {
-    return {ethash_create_epoch_context_full(epoch_number), ethash_destroy_epoch_context_full};
+    static ethash::epoch_context_ptr context = ethash::create_epoch_context(0);
+    return *context;
 }
-
-
-inline result hash(
-    const epoch_context& context, const hash256& header_hash, uint64_t nonce) noexcept
-{
-    return ethash_hash(&context, &header_hash, nonce);
-}
-
-result hash(const epoch_context_full& context, const hash256& header_hash, uint64_t nonce) noexcept;
-
-inline bool verify_final_hash(const hash256& header_hash, const hash256& mix_hash, uint64_t nonce,
-    const hash256& boundary) noexcept
-{
-    return ethash_verify_final_hash(&header_hash, &mix_hash, nonce, &boundary);
-}
-
-inline bool verify(const epoch_context& context, const hash256& header_hash, const hash256& mix_hash,
-    uint64_t nonce, const hash256& boundary) noexcept
-{
-    return ethash_verify(&context, &header_hash, &mix_hash, nonce, &boundary);
-}
-
-search_result search_light(const epoch_context& context, const hash256& header_hash,
-    const hash256& boundary, uint64_t start_nonce, size_t iterations) noexcept;
-
-search_result search(const epoch_context_full& context, const hash256& header_hash,
-    const hash256& boundary, uint64_t start_nonce, size_t iterations) noexcept;
-
-
-/// Tries to find the epoch number matching the given seed hash.
-///
-/// Mining pool protocols (many variants of stratum and "getwork") send out
-/// seed hash instead of epoch number to workers. This function tries to recover
-/// the epoch number from this seed hash.
-///
-/// @param seed  Ethash seed hash.
-/// @return      The epoch number or -1 if not found.
-int find_epoch_number(const hash256& seed) noexcept;
-
-
-/// Get global shared epoch context.
-inline const epoch_context& get_global_epoch_context(int epoch_number) noexcept
-{
-    return *ethash_get_global_epoch_context(epoch_number);
-}
-
-/// Get global shared epoch context with full dataset initialized.
-inline const epoch_context_full& get_global_epoch_context_full(int epoch_number) noexcept
-{
-    return *ethash_get_global_epoch_context_full(epoch_number);
-}
-}  // namespace ethash
