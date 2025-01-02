@@ -73,11 +73,11 @@ struct ifaddrs *g_ifaddr;
 
 volatile bool g_exiting = false;
 
-bool is_kawpow = false;
-bool is_firopow = false;
-
 void *stratum_thread(void *p);
 void *monitor_thread(void *p);
+
+bool is_kawpow = false;
+bool is_firopow = false;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -345,6 +345,17 @@ int main(int argc, char **argv)
 	if(!g_current_algo) yaamp_error("invalid algo");
 	if(!g_current_algo->hash_function) yaamp_error("no hash function");
 
+		if (!strcmp(g_current_algo->name,"kawpow")) {
+		is_kawpow = true;
+	} else if (!strcmp(g_current_algo->name,"firopow")) {
+		is_firopow = true;
+	} else {
+		debuglog("this stratum only supports kawpow or firopow-based coins.\n");
+		return 1;
+	}
+
+	debuglog("running in %s mode\n", is_kawpow ? "KAWPOW" : "FIROPOW");
+	
 //	struct rlimit rlim_files = {0x10000, 0x10000};
 //	setrlimit(RLIMIT_NOFILE, &rlim_files);
 
