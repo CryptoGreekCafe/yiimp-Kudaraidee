@@ -159,7 +159,7 @@ void job_broadcast(YAAMP_JOB *job)
 	g_last_broadcasted = time(NULL);
 
 	int s2 = current_timestamp_dms();
-	//if(!count) return;
+	if(!count) return;
 
 	///////////////////////
 
